@@ -1,14 +1,16 @@
 import re
-import hikari, lightbulb
+import hikari
+import lightbulb
 import extensions.pull_requests as pr
 from __main__ import bot
 plugin = lightbulb.Plugin("pull_requests")
 
 pr_api = pr.API()
 
+
 @bot.listen()
 async def on_message_create(event: hikari.MessageCreateEvent) -> None:
-    if event.author.is_bot: 
+    if event.author.is_bot:
         return
     content = event.message.content
     if content is None:
@@ -24,7 +26,10 @@ async def on_message_create(event: hikari.MessageCreateEvent) -> None:
     embed = pr_api.get_pull_request(int(number))
     await message.edit(embed=embed)
 
+
 def load(bot):
     bot.add_plugin(plugin)
+
+
 def unload(bot):
     bot.remove_plugin(plugin)

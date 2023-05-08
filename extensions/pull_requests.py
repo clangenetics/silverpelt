@@ -3,6 +3,7 @@ from os import environ
 from hikari import Embed
 from typing import Union
 
+
 class API:
     def __init__(self) -> None:
         self.is_initialized = False
@@ -54,7 +55,7 @@ class API:
             color=color,
             url=pull_data.html_url
         )
-        #pylint: disable=line-too-long
+        # pylint: disable=line-too-long
         embed.set_footer(
             text=f"{pull_data.user.name if pull_data.user.name is not None else pull_data.user.login} • {pull_data.created_at.strftime('%d %b %Y')}"
         )
