@@ -1,5 +1,6 @@
-import lightbulb, hikari, dotenv
+import lightbulb, hikari, dotenv, threading
 from os import environ
+from server import App
 
 dotenv.load_dotenv(".env")
 bot = lightbulb.BotApp(
@@ -28,4 +29,8 @@ async def reload(ctx: lightbulb.Context) -> None:
 
 bot.load_extensions_from("cogs")
 extensions = bot.extensions
-bot.run()
+server = App(bot)
+
+bot_thread = threading.Thread(target=bot.run)
+bot_thread.start()
+server.app.run(host="localhost", port=8000)
