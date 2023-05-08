@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "name": "Main",
+            "name": "Bot",
             "type": "python",
             "request": "launch",
             "program": "main.py",
