@@ -1,10 +1,9 @@
+from builtins import print as _print
+from re import search
 import lightbulb
-import re
-import ast
-from os import environ
+import hikari
 
-from __main__ import bot
-plugin = lightbulb.Plugin("pull_requests")
+plugin = lightbulb.Plugin("evaluate")
 
 
 @plugin.command

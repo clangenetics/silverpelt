@@ -1,14 +1,15 @@
 import re
 import hikari
 import lightbulb
-import extensions.pull_requests as pr
-from __main__ import bot
+from extensions.pull_requests import API
+
+
 plugin = lightbulb.Plugin("pull_requests")
 
-pr_api = pr.API()
+pr_api = API()
 
 
-@bot.listen()
+@plugin.listener(hikari.MessageCreateEvent)
 async def on_message_create(event: hikari.MessageCreateEvent) -> None:
     if event.author.is_bot:
         return

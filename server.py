@@ -9,6 +9,8 @@ from lightbulb import BotApp
 import ujson as json
 
 
+tokens = {}
+
 class App():
     app = Quart(__name__,
                 static_folder='static',
@@ -20,10 +22,10 @@ class App():
         self.bot = bot
         self.app = App.app
 
-        self.tokens = {}
+        self.add_token("test", "174200708818665472", "174200708818665472", "1095692751598780526")
 
-    def add_token(self, token: str, requester: str, requestee: str, channel: str, expire: float = time()):
-        self.tokens[token] = {
+    def add_token(self, token: str, requester: str, requestee: str, channel: str, expire: float = time() + 7200):
+        tokens[token] = {
             "expire": expire,
             "requester": requester,
             "requestee": requestee,
@@ -35,11 +37,11 @@ class App():
 
         if token is None:
             return "400", 400
-        if token not in self.tokens.keys():  # pylint: disable=consider-iterating-dictionary
+        if token not in tokens.keys():  # pylint: disable=consider-iterating-dictionary
             return "400", 400
 
-        if self.tokens[token].get("expire") < time():
-            del self.tokens[token]
+        if tokens[token].get("expire") < time():
+            del tokens[token]
             return "400", 400
 
         return "200", 200
@@ -50,14 +52,14 @@ class App():
 
         if token is None:
             return "401", 401
-        if token not in self.tokens.keys():  # pylint: disable=consider-iterating-dictionary
+        if token not in tokens.keys():  # pylint: disable=consider-iterating-dictionary
             return "401", 401
 
-        if self.tokens[token].get("expire") > time():
-            del self.tokens[token]
+        if tokens[token].get("expire") > time():
+            del tokens[token]
             return "401", 401
 
-        token = self.tokens[token]
+        token = tokens[token]
         response = await request.get_json()
         if len(response) == 0:
             return "400", 400

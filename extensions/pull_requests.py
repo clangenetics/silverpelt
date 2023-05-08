@@ -1,5 +1,5 @@
-from github import Github
 from os import environ
+from github import Github
 from hikari import Embed
 from typing import Union
 
@@ -7,6 +7,8 @@ from typing import Union
 class API:
     def __init__(self) -> None:
         self.is_initialized = False
+        self.github = None
+        self.repo = None
 
     def initialize(self) -> None:
         self.is_initialized = True
