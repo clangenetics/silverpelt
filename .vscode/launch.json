@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Main",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Server",
+            "type": "python",
+            "request": "launch",
+            "module": "hypercorn",
+            "console": "integratedTerminal",
+            "args": ["server.py"],
+            "justMyCode": true
+        }
+    ]
+}
