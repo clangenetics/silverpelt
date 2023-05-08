@@ -7,7 +7,9 @@ bot = lightbulb.BotApp(
                        token = environ.get("DISCORD_TOKEN"),
                        prefix = "~",
                        intents=hikari.Intents.ALL_UNPRIVILEGED + hikari.Intents.MESSAGE_CONTENT,
-                       help_class=None)
+                       help_class=None,
+                       logs=None)
+
 
 @bot.command
 @lightbulb.command("ping", "Calls the bot with its delay")
