@@ -1,12 +1,7 @@
-import os
 import logging
 from time import time
 from quart import Quart, request
 from quart.logging import default_handler
-from hypercorn.asyncio import serve
-from hypercorn.config import Config
-from lightbulb import BotApp
-import ujson as json
 
 
 tokens = {}
@@ -31,6 +26,15 @@ class App():
             "requestee": requestee,
             "channel": channel
         }
+    
+    def check_expiry(self, token: str):
+        if tokens[token].get("expire") < time():
+            del tokens[token]
+            return False
+        return True
+    
+    def get_token(self, token: str):
+        return tokens[token]
 
     @app.route('/logtoken/<token>')
     async def logtoken(token):
@@ -63,7 +67,6 @@ class App():
         response = await request.get_json()
         if len(response) == 0:
             return "400", 400
-        logs = []
-        for key in response.keys():
-            logs.append(response[key])
+        
+
         return "200", 200
