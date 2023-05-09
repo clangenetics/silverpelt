@@ -50,7 +50,7 @@ def nat_delta(delta: dt.timedelta | int | float | str, ms: bool = False) -> str:
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def about(ctx: lightbulb.Context) -> None:
     commithash = subprocess.check_output(
-        ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+        ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
 
     with (proc := Process()).oneshot():
         cpu_time = nat_delta(

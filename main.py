@@ -11,10 +11,10 @@ bot = lightbulb.BotApp(
     token=environ.get("DISCORD_TOKEN"),
     prefix="~",
     intents=hikari.Intents.ALL_UNPRIVILEGED + hikari.Intents.MESSAGE_CONTENT,
-    help_class=None,
     logs=None,
-    owner_ids=[174200708818665472, 266751215767912463],
-    suppress_optimization_warning=True
+    owner_ids=[174200708818665472],# 266751215767912463],
+    suppress_optimization_warning=True,
+    help_slash_command=True
 )
 
 
@@ -39,14 +39,14 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
 
 @bot.command
 @lightbulb.command("ping", "Calls the bot with its delay")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def ping(ctx: lightbulb.Context) -> None:
     await ctx.respond(f"Pong! Bot ping is {round(ctx.bot.heartbeat_latency*1000, 1)}ms")
 
 
 @bot.command
 @lightbulb.command("reload", "reloads all extensions")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def reload(ctx: lightbulb.Context) -> None:
     message = await ctx.respond(embed=hikari.Embed(description="**Reloading all extensions**", color=0x8aadff))
     try:
