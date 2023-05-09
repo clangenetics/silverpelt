@@ -18,7 +18,7 @@ module.exports = {
         production: {
             user: "luna",
             host: "silverpelt.lvna.me",
-            ref: "origin/release",
+            ref: "origin/prod",
             repo: "git@github.com:clangen-devs/silverpelt.git",
             path: "/home/luna/servers/silverpelt",
             "post-deploy": "pip install -r requirements.txt && pm2 startOrRestart ecosystem.config.js --env production"
