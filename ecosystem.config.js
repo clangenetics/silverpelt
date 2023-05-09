@@ -22,7 +22,7 @@ module.exports = {
             ref: "origin/prod",
             repo: "git@github.com:clangen-devs/silverpelt.git",
             path: "/home/luna/servers/silverpelt",
-            "post-deploy": "pip install -r requirements.txt && pm2 startOrRestart ecosystem.config.js --env production"
+            "post-deploy": "npm install && pip install -r requirements.txt && pm2 startOrRestart ecosystem.config.js --env production"
         },
         development: {
             user: "luna",
@@ -30,7 +30,7 @@ module.exports = {
             ref: "origin/master",
             repo: "git@github.com:clangen-devs/silverpelt.git",
             path: "/home/luna/servers/silverpelt-dev",
-            "post-deploy": "pip install -r requirements.txt && pm2 startOrRestart ecosystem.config.js --env development"
+            "post-deploy": "npm install && pip install -r requirements.txt && pm2 startOrRestart ecosystem.config.js --env development"
         }
     }
 }
