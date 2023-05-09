@@ -24,13 +24,13 @@ jobs:
 
       # (optional - only needed if your config uses environment variables)
 
-      - name: dev
-        run: git status
       - name: Install PM2
         run: npm i -g pm2
       - name: Install dependencies
         run: npm install
-
+      
+      - name: dev
+        run: git status
       - name: Deploy
         run: pm2 deploy development
         # Or alternately, put this deploy script in your package.json's scripts and run it using yarn/npm:
