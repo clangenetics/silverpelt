@@ -9,10 +9,10 @@ from server import App
 load_dotenv(".env")
 bot = lightbulb.BotApp(
     token=environ.get("DISCORD_TOKEN"),
-    prefix="~",
+    prefix="$",
     intents=hikari.Intents.ALL_UNPRIVILEGED + hikari.Intents.MESSAGE_CONTENT,
     logs=None,
-    owner_ids=[174200708818665472],# 266751215767912463],
+    owner_ids=[174200708818665472, 266751215767912463],
     suppress_optimization_warning=True,
     help_slash_command=True
 )
