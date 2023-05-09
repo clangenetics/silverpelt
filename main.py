@@ -1,6 +1,7 @@
 from os import environ
 import traceback
 import threading
+from socket import gethostname
 import lightbulb
 import hikari
 from dotenv import load_dotenv
@@ -60,6 +61,15 @@ server = App(bot)
 bot.load_extensions_from("plugins")
 extensions = bot.extensions
 
-bot_thread = threading.Thread(target=bot.run)
+def runbot():
+    if environ.get("ENVIRONMENT") == "bleeding":
+        activity = hikari.Activity(type=hikari.ActivityType.WATCHING, name=f"{gethostname()}")
+    elif environ.get("ENVIRONMENT") == "dev":
+        activity = hikari.Activity(type=hikari.ActivityType.WATCHING, name=f"Dev | {gethostname()}")
+    else:
+        activity = hikari.Activity(type=hikari.ActivityType.PLAYING, name="Clangen")
+    bot.run(activity=activity)
+
+bot_thread = threading.Thread(target=runbot)
 bot_thread.start()
 server.app.run(host="0.0.0.0", port=environ.get("PORT"))
