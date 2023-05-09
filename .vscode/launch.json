@@ -7,15 +7,6 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "justMyCode": false
-        },
-        {
-            "name": "Server",
-            "type": "python",
-            "request": "launch",
-            "module": "hypercorn",
-            "console": "integratedTerminal",
-            "args": ["server.py"],
-            "justMyCode": true
         }
     ]
 }

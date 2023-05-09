@@ -1,17 +1,33 @@
 from os import environ
+import threading
 import lightbulb
 import hikari
-import dotenv
-import threading
+from dotenv import load_dotenv
 from server import App
 
-dotenv.load_dotenv(".env")
+load_dotenv(".env")
 bot = lightbulb.BotApp(
     token=environ.get("DISCORD_TOKEN"),
     prefix="~",
     intents=hikari.Intents.ALL_UNPRIVILEGED + hikari.Intents.MESSAGE_CONTENT,
     help_class=None,
-    logs=None)
+    logs=None,
+    owner_ids=[174200708818665472, 266751215767912463]
+)
+
+
+@bot.listen(lightbulb.CommandErrorEvent)
+async def on_error(event: lightbulb.CommandErrorEvent) -> None:
+    if isinstance(event.exception, lightbulb.CommandInvocationError):
+        # Be sure to ping the owners
+        return await event.context.respond(f"Something went wrong when running the command {event.context.command.name}. \n ```{event.exception}```\n{', '.join([f'<@{i}>' for i in bot.owner_ids])}")
+    exception = event.exception.__cause__ or event.exception
+    # if isinstance(exception, lightbulb.MissingRequiredArgument):
+    #     await event.context.respond(f"Missing required argument: `{event.exception.param.name}`")
+    if isinstance(exception, lightbulb.NotOwner):
+        pass
+    elif isinstance(exception, lightbulb.CommandIsOnCooldown):
+        await event.context.respond(f"Command is on cooldown for {round(exception.retry_after, 1)} seconds")
 
 
 @bot.command
@@ -37,13 +53,6 @@ server = App(bot)
 bot.load_extensions_from("cogs")
 extensions = bot.extensions
 
-async def startbot():
-    """
-    Bot must be started in an async function
-    If it isnt, the rest api freaks out
-    """
-    bot.run()
-
-bot_thread = threading.Thread(target=startbot)
+bot_thread = threading.Thread(target=bot.run)
 bot_thread.start()
 server.app.run(host="0.0.0.0", port=8080)

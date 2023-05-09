@@ -1,7 +1,7 @@
 from os import environ
+from typing import Union
 from github import Github
 from hikari import Embed
-from typing import Union
 
 
 class API:

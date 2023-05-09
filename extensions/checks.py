@@ -1,5 +1,6 @@
 import lightbulb
 
+
 @lightbulb.Check
 def techhelp_only(ctx: lightbulb.Context) -> bool:
     techhelp_ids = [
