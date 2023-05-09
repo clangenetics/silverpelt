@@ -17,9 +17,9 @@ tokenmsgs = {}
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def logs(ctx: lightbulb.Context) -> None:
     user = ctx.options.user.id
-    channel = ctx.get_channel()
+    channel = ctx.channel_id
     requester = ctx.author.id
-    token = uuid.uuid4().hex[:6]
+    token = uuid.uuid4().hex[:7]
 
     exptime = time() + 7200
 
@@ -32,7 +32,7 @@ async def logs(ctx: lightbulb.Context) -> None:
         )
     tokenmsgs[token] = message
 
-    server.add_token(token, user, requester, exptime)
+    server.add_token(token, requester, user, channel, exptime)
     
 
 @plugin.listener(hikari.InteractionCreateEvent)

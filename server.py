@@ -13,8 +13,11 @@ class App():
                 template_folder='templates')
     logging.getLogger("quart.app").removeHandler(default_handler)
 
-    def __init__(self, bot):
-        self.bot = bot
+    bot = None
+
+    def __init__(self, _bot):
+        self.bot = _bot
+        App.bot = _bot
         self.app = App.app
 
         self.add_token("test", "174200708818665472", "174200708818665472", "1095692751598780526")
@@ -51,22 +54,24 @@ class App():
         return "200", 200
 
     @app.route('/logs/', methods=["POST"])
-    async def get_logs():
+    async def logs():
         token = request.headers.get("token")
-
         if token is None:
             return "401", 401
         if token not in tokens.keys():  # pylint: disable=consider-iterating-dictionary
             return "401", 401
 
-        if tokens[token].get("expire") > time():
+        if tokens[token].get("expire") < time():
             del tokens[token]
             return "401", 401
 
         token = tokens[token]
         response = await request.get_json()
-        if len(response) == 0:
-            return "400", 400
+        # if len(response) == 0:
+        #     return "400", 400
         
+        channel = await App.bot.rest.fetch_channel(token["channel"])
+
+        await channel.send("test")
 
         return "200", 200
