@@ -9,21 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      #
-      # ... your other steps, such as running tests, etc...
-      #
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh/
-          echo "$SSH_PRIVATE_KEY" > ./deploy.key
+          echo "$SSH_PRIVATE_KEY" > ./deploy.keyx
           sudo chmod 600 ./deploy.key
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
         shell: bash
         env:
           SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
           SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
-
-      # (optional - only needed if your config uses environment variables)
 
       - name: Install PM2
         run: npm i -g pm2
@@ -32,5 +27,3 @@ jobs:
 
       - name: Deploy
         run: pm2 deploy development
-        # Or alternately, put this deploy script in your package.json's scripts and run it using yarn/npm:
-        # run: yarn deploy
