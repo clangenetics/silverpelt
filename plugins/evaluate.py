@@ -29,7 +29,8 @@ async def evaluate(ctx: lightbulb.Context) -> None:
     logs = []
 
     cmddone = False
-    async def _print(desc):
+
+    async def updmessage(desc):
         color = 0x8aadff
         if cmddone:
             color = 0x73eb79
@@ -40,7 +41,7 @@ async def evaluate(ctx: lightbulb.Context) -> None:
         logs.append(''.join([str(i) for i in args]))
         desc = '\n'.join(logs)
         if desc != "":
-            asyncio.create_task(_print(desc))
+            asyncio.create_task(updmessage(desc))
     try:
         exec(code)  # pylint: disable=exec-used
         desc = '\n'.join(logs)

@@ -3,6 +3,7 @@ import lightbulb
 
 plugin = lightbulb.Plugin("links")
 
+
 @plugin.command
 @lightbulb.option("link", "Link", required=False)
 @lightbulb.command("links", "Show links to common resources", aliases=["link"])
@@ -48,6 +49,7 @@ async def links(ctx: lightbulb.Context) -> None:
 
 def load(bot):
     bot.add_plugin(plugin)
+
 
 def unload(bot):
     bot.remove_plugin(plugin)

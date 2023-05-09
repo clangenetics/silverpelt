@@ -1,7 +1,6 @@
 import datetime as dt
 
 import platform
-import time
 import subprocess
 from psutil import Process, virtual_memory
 
@@ -11,9 +10,6 @@ import hikari
 from isodate import parse_duration
 
 plugin = lightbulb.Plugin("about")
-
-
-
 
 
 def aware_now() -> dt.datetime:
@@ -49,15 +45,16 @@ def nat_delta(delta: dt.timedelta | int | float | str, ms: bool = False) -> str:
     return ", ".join(parts)
 
 
-
 @plugin.command
 @lightbulb.command("about", "Sends bot info")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def about(ctx: lightbulb.Context) -> None:
-    commithash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+    commithash = subprocess.check_output(
+        ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
 
     with (proc := Process()).oneshot():
-        cpu_time = nat_delta((cpu := proc.cpu_times()).system + cpu.user, ms=True)
+        cpu_time = nat_delta(
+            (cpu := proc.cpu_times()).system + cpu.user, ms=True)
         mem_total = virtual_memory().total / (1024**2)
         mem_of_total = proc.memory_percent()
         mem_usage = mem_total * (mem_of_total / 100)

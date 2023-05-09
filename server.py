@@ -4,6 +4,7 @@ import shutil
 from time import time
 from quart import Quart, request  # pylint: disable=ungrouped-imports
 import hikari
+from ujson import loads
 from quart.logging import default_handler
 
 
@@ -18,7 +19,7 @@ class App():
     logging.getLogger("quart.app").removeHandler(default_handler)
 
     rest = hikari.RESTBot(token=os.environ.get(
-        "DISCORD_TOKEN"), logs=None,
+        "DISCORD_TOKEN"), logs=None, loads=loads,
         banner=None, suppress_optimization_warning=True).rest
 
     bot = None

@@ -3,6 +3,7 @@ import traceback
 import threading
 import lightbulb
 import hikari
+from ujson import loads
 from dotenv import load_dotenv
 from server import App
 
@@ -15,7 +16,7 @@ bot = lightbulb.BotApp(
     logs=None,
     owner_ids=[174200708818665472, 266751215767912463],
     suppress_optimization_warning=True,
-    
+    loads=loads
 )
 
 
@@ -30,14 +31,12 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
             user_mentions=bot.owner_ids)
     exception = event.exception.__cause__ or event.exception
     # if isinstance(exception, lightbulb.MissingRequiredArgument):
-    #     await event.context.respond(f"Missing required argument: `{event.exception.param.name}`")
+    # await event.context.respond(f"Missing required argument:
+    # `{event.exception.param.name}`")
     if isinstance(exception, lightbulb.NotOwner):
         pass
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
         await event.context.respond(f"Command is on cooldown for {round(exception.retry_after, 1)} seconds")
-
-
-
 
 
 @bot.command
