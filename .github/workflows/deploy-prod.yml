@@ -26,6 +26,8 @@ jobs:
 
       - name: Install PM2
         run: npm i -g pm2
+      - name: Install dependencies
+        run: npm install dotenv
 
       - name: Deploy
         run: pm2 deploy production
