@@ -24,6 +24,8 @@ jobs:
 
       # (optional - only needed if your config uses environment variables)
 
+      - name: dev
+        run: git status
       - name: Install PM2
         run: npm i -g pm2
       - name: Install dependencies
