@@ -1,11 +1,14 @@
-from github import Github
 from os import environ
-from hikari import Embed
 from typing import Union
+from github import Github
+from hikari import Embed
+
 
 class API:
     def __init__(self) -> None:
         self.is_initialized = False
+        self.github = None
+        self.repo = None
 
     def initialize(self) -> None:
         self.is_initialized = True
@@ -54,7 +57,7 @@ class API:
             color=color,
             url=pull_data.html_url
         )
-        #pylint: disable=line-too-long
+        # pylint: disable=line-too-long
         embed.set_footer(
             text=f"{pull_data.user.name if pull_data.user.name is not None else pull_data.user.login} • {pull_data.created_at.strftime('%d %b %Y')}"
         )
