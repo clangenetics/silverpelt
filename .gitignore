@@ -4,3 +4,5 @@ log_tokens.json
 temp/
 node_modules/
 deploy.key
+yarn.lock
+package-lock.json
