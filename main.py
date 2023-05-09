@@ -1,8 +1,8 @@
+from os import environ
 import lightbulb
 import hikari
 import dotenv
 import threading
-from os import environ
 from server import App
 
 dotenv.load_dotenv(".env")
@@ -37,6 +37,13 @@ server = App(bot)
 bot.load_extensions_from("cogs")
 extensions = bot.extensions
 
-bot_thread = threading.Thread(target=bot.run)
+async def startbot():
+    """
+    Bot must be started in an async function
+    If it isnt, the rest api freaks out
+    """
+    bot.run()
+
+bot_thread = threading.Thread(target=startbot)
 bot_thread.start()
-server.app.run(host="localhost", port=8000)
+server.app.run(host="0.0.0.0", port=8080)
