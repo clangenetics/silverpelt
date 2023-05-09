@@ -7,11 +7,13 @@ module.exports = {
         log_file: "silverpelt.log",
         env_production: {
             PORT: "8273",
-            PREFIX: "$"
+            PREFIX: "$",
+            NODE_ENV: "production"
         },
         env_development: {
             PORT: "8000",
-            PREFIX: "~"
+            PREFIX: "~",
+            NODE_ENV: "development"
         }
     }],
 
