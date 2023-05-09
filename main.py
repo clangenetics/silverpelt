@@ -2,6 +2,7 @@ from os import environ
 import traceback
 import threading
 from socket import gethostname
+from subprocess import check_output
 import lightbulb
 import hikari
 from dotenv import load_dotenv
@@ -68,7 +69,7 @@ def runbot():
             type=hikari.ActivityType.WATCHING, name=f"{gethostname()}")
     elif environ.get("ENVIRONMENT") == "dev":
         activity = hikari.Activity(type=hikari.ActivityType.WATCHING,
-                                   name=subprocess.check_output(
+                                   name=check_output(
                                        ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
                                    )
     else:
