@@ -9,7 +9,7 @@ from server import App
 load_dotenv(".env")
 bot = lightbulb.BotApp(
     token=environ.get("DISCORD_TOKEN"),
-    prefix="$",
+    prefix=environ.get("PREFIX"),
     intents=hikari.Intents.ALL_UNPRIVILEGED + hikari.Intents.MESSAGE_CONTENT,
     logs=None,
     owner_ids=[174200708818665472, 266751215767912463],
@@ -62,4 +62,4 @@ extensions = bot.extensions
 
 bot_thread = threading.Thread(target=bot.run)
 bot_thread.start()
-server.app.run(host="0.0.0.0", port=8080)
+server.app.run(host="0.0.0.0", port=environ.get("PORT"))
