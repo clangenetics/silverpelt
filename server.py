@@ -3,6 +3,8 @@ import logging
 import shutil
 from time import time
 from quart import Quart, request  # pylint: disable=ungrouped-imports
+import hypercorn
+import asyncio
 import hikari
 from quart.logging import default_handler
 
@@ -34,6 +36,13 @@ class App():
         if os.path.exists("temp"):
             shutil.rmtree("temp")
         os.mkdir("temp")
+    
+    def start(self):
+        config = hypercorn.config.Config()
+        config.bind = [f"0.0.0.0"]
+        config.port = int(os.environ.get("PORT"))
+        config.accesslog = "-"
+        asyncio.run(hypercorn.asyncio.serve(App.app, config))
 
     def add_token(self, token: str, requester: str, requestee: str, channel: str, expire: float = time() + 7200):  # pylint: disable=too-many-arguments
         tokens[token] = {

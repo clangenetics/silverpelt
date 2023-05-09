@@ -16,7 +16,8 @@ bot = lightbulb.BotApp(
     logs=None,
     owner_ids=[174200708818665472, 266751215767912463],
     suppress_optimization_warning=True,
-    help_slash_command=True
+    help_slash_command=True,
+    banner=None,
 )
 
 
@@ -80,4 +81,4 @@ def runbot():
 
 bot_thread = threading.Thread(target=runbot)
 bot_thread.start()
-server.app.run(host="0.0.0.0", port=environ.get("PORT"))
+server.start()
