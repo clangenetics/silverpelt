@@ -28,12 +28,19 @@ async def evaluate(ctx: lightbulb.Context) -> None:
     message = await ctx.respond(embed=hikari.Embed(description="**Evaluating code...**", color=0x8aadff))
     logs = []
 
+    cmddone = False
+    async def _print(desc):
+        color = 0x8aadff
+        if cmddone:
+            color = 0x73eb79
+        await message.edit(embed=hikari.Embed(description=desc, color=color))
+
     def print(*args, **kwargs):  # pylint: disable=unused-variable, redefined-builtin
         _print(*args, **kwargs)
         logs.append(''.join([str(i) for i in args]))
         desc = '\n'.join(logs)
         if desc != "":
-            asyncio.create_task(message.edit(embed=hikari.Embed(description=desc, color=0x8aadff)))
+            asyncio.create_task(_print(desc))
     try:
         exec(code)  # pylint: disable=exec-used
         desc = '\n'.join(logs)

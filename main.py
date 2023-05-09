@@ -60,7 +60,7 @@ async def reload(ctx: lightbulb.Context) -> None:
         await message.edit(embed=hikari.Embed(description=f"**:x: Error reloading**\n{e}", color=0xff3838))
 
 server = App(bot)
-bot.load_extensions_from("cogs")
+bot.load_extensions_from("plugins")
 extensions = bot.extensions
 
 bot_thread = threading.Thread(target=bot.run)
