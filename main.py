@@ -1,4 +1,5 @@
 from os import environ
+import traceback
 import threading
 import lightbulb
 import hikari
@@ -20,7 +21,9 @@ bot = lightbulb.BotApp(
 async def on_error(event: lightbulb.CommandErrorEvent) -> None:
     if isinstance(event.exception, lightbulb.CommandInvocationError):
         # Be sure to ping the owners
-        return await event.context.respond(f"Something went wrong when running the command {event.context.command.name}. \n ```{event.exception}```\n{', '.join([f'<@{i}>' for i in bot.owner_ids])}")
+        _traceback = event.exception.__cause__ or event.exception
+        stack = ''.join(traceback.format_tb(_traceback.__traceback__))
+        return await event.context.respond(f"Something went wrong when running the command {event.context.command.name}. \n ```{_traceback}\n\n{stack}```\n{', '.join([f'<@{i}>' for i in bot.owner_ids])}")
     exception = event.exception.__cause__ or event.exception
     # if isinstance(exception, lightbulb.MissingRequiredArgument):
     #     await event.context.respond(f"Missing required argument: `{event.exception.param.name}`")
@@ -28,6 +31,9 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         pass
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
         await event.context.respond(f"Command is on cooldown for {round(exception.retry_after, 1)} seconds")
+
+
+
 
 
 @bot.command
