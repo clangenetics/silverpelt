@@ -61,14 +61,21 @@ server = App(bot)
 bot.load_extensions_from("plugins")
 extensions = bot.extensions
 
+
 def runbot():
     if environ.get("ENVIRONMENT") == "bleeding":
-        activity = hikari.Activity(type=hikari.ActivityType.WATCHING, name=f"{gethostname()}")
+        activity = hikari.Activity(
+            type=hikari.ActivityType.WATCHING, name=f"{gethostname()}")
     elif environ.get("ENVIRONMENT") == "dev":
-        activity = hikari.Activity(type=hikari.ActivityType.WATCHING, name=f"Dev | {gethostname()}")
+        activity = hikari.Activity(type=hikari.ActivityType.WATCHING,
+                                   name=subprocess.check_output(
+                                       ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
+                                   )
     else:
-        activity = hikari.Activity(type=hikari.ActivityType.PLAYING, name="Clangen")
+        activity = hikari.Activity(
+            type=hikari.ActivityType.PLAYING, name="Clangen")
     bot.run(activity=activity)
+
 
 bot_thread = threading.Thread(target=runbot)
 bot_thread.start()

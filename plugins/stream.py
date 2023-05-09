@@ -14,11 +14,12 @@ plugin = lightbulb.Plugin("links")
 async def stream(ctx: lightbulb.Context) -> None:
     if not ctx.options.link:
         # Remove the link
-        activity = hikari.Activity(name="Clangen", type=hikari.ActivityType.PLAYING)
+        activity = hikari.Activity(
+            name="Clangen", type=hikari.ActivityType.PLAYING)
         await ctx.bot.update_presence(activity=activity, status=hikari.Status.ONLINE)
         await ctx.respond("Removed the stream link.")
         return
-    
+
     await ctx.bot.update_presence(activity=hikari.Activity(
         name="Clangen",
         type=hikari.ActivityType.STREAMING,
