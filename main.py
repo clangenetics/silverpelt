@@ -3,7 +3,6 @@ import traceback
 import threading
 import lightbulb
 import hikari
-from ujson import loads
 from dotenv import load_dotenv
 from server import App
 
@@ -15,8 +14,7 @@ bot = lightbulb.BotApp(
     help_class=None,
     logs=None,
     owner_ids=[174200708818665472, 266751215767912463],
-    suppress_optimization_warning=True,
-    loads=loads
+    suppress_optimization_warning=True
 )
 
 
