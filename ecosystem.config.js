@@ -1,7 +1,7 @@
 require("dotenv").config();
 module.exports = {
     apps: [{
-        name: "silverpelt-"+process.env.environment,
+        name: "silverpelt-"+process.env.ENVIRONMENT,
         script: "./main.py",
         interpreter: "python3",
         log_file: "silverpelt.log",
