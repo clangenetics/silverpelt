@@ -18,7 +18,8 @@ class App():
     logging.getLogger("quart.app").removeHandler(default_handler)
 
     rest = hikari.RESTBot(token=os.environ.get(
-        "DISCORD_TOKEN"), logs=None).rest
+        "DISCORD_TOKEN"), logs=None,
+        banner=None, suppress_optimization_warning=True).rest
 
     bot = None
 
@@ -110,7 +111,8 @@ class App():
             if first:
                 await channel.send(
                     content=f"<@{token['requester']}>, <@{token['requestee']}>'s logs are ready!",
-                    attachments=[f"temp/{filename}" for filename in group]
+                    attachments=[f"temp/{filename}" for filename in group],
+                    user_mentions=[token['requester']]
                 )
                 first = False
                 second = True

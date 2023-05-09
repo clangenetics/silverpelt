@@ -1,5 +1,6 @@
 from builtins import print as _print
 from re import search
+import asyncio
 import lightbulb
 import hikari
 
@@ -8,8 +9,8 @@ plugin = lightbulb.Plugin("evaluate")
 
 @plugin.command
 @lightbulb.add_checks(lightbulb.owner_only)
-@lightbulb.command("eval", "Evaluates a python expression")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.command("eval", "Evaluates a python expression", hidden=True)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def evaluate(ctx: lightbulb.Context) -> None:
     code = ctx.event.content[len(ctx.prefix) + 5:]
     match_blockquote = search(r"^```(?:(?:py|python)\n)?([^`]+?)```", code)
@@ -32,7 +33,7 @@ async def evaluate(ctx: lightbulb.Context) -> None:
         logs.append(''.join([str(i) for i in args]))
         desc = '\n'.join(logs)
         if desc != "":
-            message.edit(embed=hikari.Embed(description=desc, color=0x8aadff))
+            asyncio.create_task(message.edit(embed=hikari.Embed(description=desc, color=0x8aadff)))
     try:
         exec(code)  # pylint: disable=exec-used
         desc = '\n'.join(logs)

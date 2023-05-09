@@ -30,7 +30,8 @@ async def logs(ctx: lightbulb.Context) -> None:
 
     message = await ctx.respond(
         content=f"<@{user}>, <@{requester}> wants to see your logs. If you want to allow this, please press the button below. The token will expire at <t:{int(exptime)}:t>",
-        component=actionrow
+        component=actionrow,
+        user_mentions=[user, requester]
     )
     tokenmsgs[token] = message
 

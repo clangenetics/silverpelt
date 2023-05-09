@@ -13,7 +13,9 @@ bot = lightbulb.BotApp(
     intents=hikari.Intents.ALL_UNPRIVILEGED + hikari.Intents.MESSAGE_CONTENT,
     help_class=None,
     logs=None,
-    owner_ids=[174200708818665472, 266751215767912463]
+    owner_ids=[174200708818665472, 266751215767912463],
+    suppress_optimization_warning=True,
+    
 )
 
 
@@ -23,7 +25,9 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         # Be sure to ping the owners
         _traceback = event.exception.__cause__ or event.exception
         stack = ''.join(traceback.format_tb(_traceback.__traceback__))
-        return await event.context.respond(f"Something went wrong when running the command {event.context.command.name}. \n ```{_traceback}\n\n{stack}```\n{', '.join([f'<@{i}>' for i in bot.owner_ids])}")
+        return await event.context.respond(
+            f"Something went wrong when running the command {event.context.command.name}. \n ```{_traceback}\n\n{stack}```\n{', '.join([f'<@{i}>' for i in bot.owner_ids])}",
+            user_mentions=bot.owner_ids)
     exception = event.exception.__cause__ or event.exception
     # if isinstance(exception, lightbulb.MissingRequiredArgument):
     #     await event.context.respond(f"Missing required argument: `{event.exception.param.name}`")
