@@ -2,3 +2,4 @@ __pycache__/
 .env
 log_tokens.json
 temp/
+node_modules/
