@@ -25,7 +25,7 @@ jobs:
       # (optional - only needed if your config uses environment variables)
 
       - name: Install PM2
-        run: npm i pm2
+        run: npm i -g pm2
 
       - name: Deploy
         run: pm2 deploy development
