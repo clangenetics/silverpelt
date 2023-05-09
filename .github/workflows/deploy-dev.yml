@@ -1,7 +1,7 @@
-name: Deploy-Dev
+name: Deploy-Prod
 on:
   push:
-    branches: [ master ]
+    branches: [ prod ]
 
 jobs:
   deploy:
@@ -28,9 +28,7 @@ jobs:
         run: npm i -g pm2
       - name: Install dependencies
         run: npm install
-      
-      - name: dev
-        run: git status
+
       - name: Deploy
         run: pm2 deploy development
         # Or alternately, put this deploy script in your package.json's scripts and run it using yarn/npm:
