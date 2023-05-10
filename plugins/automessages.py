@@ -2,7 +2,8 @@ import hikari
 import lightbulb
 import ujson
 
-messages = ujson.load(open("automessages.json", "r"))
+with open("automessages.json", "r") as f:
+    messages = ujson.load(f)
 
 plugin = lightbulb.Plugin("automsgs")
 
