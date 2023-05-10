@@ -9,9 +9,19 @@ from dotenv import load_dotenv
 from server import App
 
 load_dotenv(".env")
+
+token = environ.get("DISCORD_TOKEN")
+if token is None:
+    raise Exception("No token provided") # pylint: disable=broad-exception-raised
+if environ.get("GITHUB_TOKEN") is None:
+    raise Exception("No github token provided") # pylint: disable=broad-exception-raised
+prefix = environ.get("PREFIX")
+if prefix is None:
+    prefix = "!"
+
 bot = lightbulb.BotApp(
-    token=environ.get("DISCORD_TOKEN"),
-    prefix=environ.get("PREFIX"),
+    token=token,
+    prefix=prefix,
     intents=hikari.Intents.ALL_UNPRIVILEGED + hikari.Intents.MESSAGE_CONTENT,
     logs=None,
     owner_ids=[174200708818665472, 266751215767912463],
