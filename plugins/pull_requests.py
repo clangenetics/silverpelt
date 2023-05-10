@@ -3,7 +3,6 @@ import re
 from github import Github
 import hikari
 import lightbulb
-from extensions.pull_requests import API
 
 
 plugin = lightbulb.Plugin("pull_requests")
