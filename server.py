@@ -39,8 +39,11 @@ class App():
     
     def start(self):
         config = hypercorn.config.Config()
-        config.bind = [f"0.0.0.0"]
-        config.port = int(os.environ.get("PORT"))
+        if os.environ.get("ENVIRONMENT") is "bleeding":
+            config.bind = ["localhost"]
+            config.port = 8000
+        else:
+            config.bind = [f'unix:/home/luna/sockets/silverpelt-{os.environ.get("ENVIRONMENT")}.sock']
         config.accesslog = "-"
         asyncio.run(hypercorn.asyncio.serve(App.app, config))
 
