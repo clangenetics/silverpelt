@@ -3,13 +3,11 @@ import logging
 import shutil
 from time import time
 import asyncio
-from quart import Quart, request  # pylint: disable=ungrouped-imports
+from importlib import import_module
+from quart import Quart  # pylint: disable=ungrouped-imports
 import hypercorn
 import hikari
 from quart.logging import default_handler
-
-
-tokens = {}
 
 
 class App():
@@ -25,6 +23,9 @@ class App():
 
     bot = None
 
+    tokens = {}
+
+
     def __init__(self, _bot):
         self.bot = _bot
         App.bot = _bot
@@ -37,6 +38,19 @@ class App():
             shutil.rmtree("temp")
         os.mkdir("temp")
 
+        # Import all routes
+        def recurse(path):
+            for file in os.listdir(path):
+                if os.path.isdir(f"{path}/{file}"):
+                    recurse(f"{path}/{file}")
+                else:
+                    if file.endswith(".py"):
+                        module = import_module(
+                            f"{path.replace('/', '.')}.{file[:-3]}")
+                        module.init(self)
+                        print(f"Loaded {path.replace('/', '.')}.{file[:-3]}")
+        recurse("routes")
+
     def start(self):
         config = hypercorn.config.Config()
         if os.environ.get("NODE_ENV") == "dev" or os.environ.get("NODE_ENV") == "prod":
@@ -45,12 +59,12 @@ class App():
             port = os.environ.get("PORT")
             if port is None:
                 port = 8000
-            config.bind = f"localhost:{port}"
+            config.bind = f"0.0.0.0:{port}"
         config.accesslog = "-"
         asyncio.run(hypercorn.asyncio.serve(App.app, config))
 
     def add_token(self, token: str, requester: str, requestee: str, channel: str, expire: float = time() + 7200):  # pylint: disable=too-many-arguments
-        tokens[token] = {
+        App.tokens[token] = {
             "expire": expire,
             "requester": requester,
             "requestee": requestee,
@@ -58,89 +72,10 @@ class App():
         }
 
     def check_expiry(self, token: str):
-        if tokens[token].get("expire") < time():
-            del tokens[token]
+        if App.tokens[token].get("expire") < time():
+            del App.tokens[token]
             return False
         return True
 
     def get_token(self, token: str):
-        return tokens[token]
-
-    @app.route('/logtoken/<token>')
-    async def logtoken(token):
-
-        if token is None:
-            return "400", 400
-        if token not in tokens.keys():  # pylint: disable=consider-iterating-dictionary
-            return "400", 400
-
-        if tokens[token].get("expire") < time():
-            del tokens[token]
-            return "400", 400
-
-        return "200", 200
-
-    @app.route('/logs/', methods=["POST"])
-    async def logs():  # pylint: disable=too-many-branches
-        token = request.headers.get("token")
-        if token is None:
-            return "401", 401
-        if token not in tokens.keys():  # pylint: disable=consider-iterating-dictionary
-            return "401", 401
-
-        if tokens[token].get("expire") < time():
-            del tokens[token]
-            return "401", 401
-
-        token = tokens[token]
-        response = await request.get_json()
-        if len(response) == 0:
-            return "400", 400
-
-        if not App.rest.is_alive:
-            App.rest.start()
-
-        for filename, data in response.items():
-            with open(f"temp/{filename}", "w+") as f:
-                f.write(data)
-
-        channel = await App.rest.fetch_channel(token["channel"])
-
-        # Each message can send ten logs
-        # So we need to split the logs into groups of ten
-        # And then send each group as a message
-
-        i = 0
-        groups = [[]]
-        for filename in response.keys():
-            if i == 10:
-                groups.append([])
-                i = 0
-            groups[-1].append(filename)
-            i += 1
-
-        first = True
-        second = False
-        for group in groups:
-            if first:
-                await channel.send(
-                    content=f"<@{token['requester']}>, <@{token['requestee']}>'s logs are ready!",
-                    attachments=[f"temp/{filename}" for filename in group],
-                    user_mentions=[token['requester']]
-                )
-                first = False
-                second = True
-            else:
-                content = ''
-                if second:
-                    content = "Too many logs for one message, sending in multiple messages..."
-                    second = False
-                await channel.send(
-                    content=content,
-                    attachments=[f"temp/{filename}" for filename in group]
-                )
-
-        for filename in response.keys():
-            os.remove(f"temp/{filename}")
-
-        return "200", 200
+        return App.tokens[token]
