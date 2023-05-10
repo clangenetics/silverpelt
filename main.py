@@ -1,6 +1,8 @@
 from os import environ
 import traceback
 import threading
+from socket import gethostname
+from subprocess import check_output
 import lightbulb
 import hikari
 from dotenv import load_dotenv
@@ -14,7 +16,8 @@ bot = lightbulb.BotApp(
     logs=None,
     owner_ids=[174200708818665472, 266751215767912463],
     suppress_optimization_warning=True,
-    help_slash_command=True
+    help_slash_command=True,
+    banner=None,
 )
 
 
@@ -60,6 +63,22 @@ server = App(bot)
 bot.load_extensions_from("plugins")
 extensions = bot.extensions
 
-bot_thread = threading.Thread(target=bot.run)
+
+def runbot():
+    if environ.get("ENVIRONMENT") == "bleeding":
+        activity = hikari.Activity(
+            type=hikari.ActivityType.WATCHING, name=f"{gethostname()}")
+    elif environ.get("ENVIRONMENT") == "dev":
+        activity = hikari.Activity(type=hikari.ActivityType.WATCHING,
+                                   name=check_output(
+                                       ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
+                                   )
+    else:
+        activity = hikari.Activity(
+            type=hikari.ActivityType.PLAYING, name="Clangen")
+    bot.run(activity=activity)
+
+
+bot_thread = threading.Thread(target=runbot)
 bot_thread.start()
-server.app.run(host="0.0.0.0", port=environ.get("PORT"))
+server.start()
