@@ -64,8 +64,11 @@ async def about(ctx: lightbulb.Context) -> None:
         uptime = pm2info['pm2_env']['pm_uptime']
         # Convert this to a string
         uptime = nat_delta(uptime, ms=True)
+        cpu_percent = pm2info['monit']['cpu']
+        cpu_percent = f"{cpu_percent}%"
     else:
         uptime = None
+        cpu_percent = None
         commithash = subprocess.check_output(
             ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
         commitmsg = subprocess.check_output(
@@ -91,17 +94,19 @@ async def about(ctx: lightbulb.Context) -> None:
     embed.set_thumbnail(ctx.bot.get_me().avatar_url)
     embed.set_author(name="Bot Information")
     embed.set_footer(f"Requested by {ctx.member.display_name}", icon=ctx.member.avatar_url)
-    embed.add_field("Bot version", commithash, inline=True)
+    embed.add_field("Bot version", f"`{commithash}`", inline=True)
     embed.add_field("Latest change", commitmsg, inline=True)
-    embed.add_field("Python version", platform.python_version(), inline=True)
-    embed.add_field("Hikari version", hikari.__version__, inline=True)
-    embed.add_field("Lightbulb version", lightbulb.__version__, inline=True)
+    embed.add_field("Python version", f"`{platform.python_version()}`", inline=True)
+    embed.add_field("Hikari version", f"`{hikari.__version__}`", inline=True)
+    embed.add_field("Lightbulb version", f"`{lightbulb.__version__}`", inline=True)
     if uptime is not None:
         embed.add_field("Uptime", uptime, inline=True)
+    if cpu_percent is not None:
+        embed.add_field("CPU usage", f"`{cpu_percent}`", inline=True)
     embed.add_field("CPU time", cpu_time, inline=True)
     embed.add_field(
         "Memory usage",
-        f"{mem_usage:,.3f}/{mem_total:,.0f} MiB ({mem_of_total:,.0f}%)",
+        f"`{mem_usage:,.3f}/{mem_total:,.0f} MiB ({mem_of_total:,.0f}%)`",
         inline=True,
     )
     await ctx.respond(embed=embed)
