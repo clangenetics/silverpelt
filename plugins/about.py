@@ -85,10 +85,20 @@ async def about(ctx: lightbulb.Context) -> None:
         mem_of_total = proc.memory_percent()
         mem_usage = mem_total * (mem_of_total / 100)
 
+    authorids = [f"<@{i}>" for i in ctx.bot.owner_ids]
+    if len(authorids) > 1:
+        authorids[-1] = f"and {authorids[-1]}"
+    elif len(authorids) == 1:
+        authorids = authorids[0]
+    if len(authorids) > 2:
+        authorids = ", ".join(authorids)
+    elif len(authorids) == 2:
+        authorids = " ".join(authorids)
+
     embed = hikari.Embed(
         title="About Silverpelt",
         description=(
-            f"Authored by {', '.join([f'<@{i}>' for i in ctx.bot.owner_ids])}. See all contributors on "
+            f"Authored by {authorids}. See all contributors on "
             f"[GitHub](https://github.com/howlagon/silverpelt/graphs/contributors). Licensed under "
             f"the [MPL-2.0](https://github.com/howlagon/silverpelt/blob/master/LICENSE) license."
         ),

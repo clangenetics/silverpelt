@@ -104,7 +104,7 @@ async def on_message_create(event: hikari.MessageCreateEvent) -> None:
     content = event.message.content
     if content is None:
         return
-    match = re.search(r"#(\d{1,4})", content)
+    match = re.search(r"#(\d{4})", content)
     if match is None:
         return
     if not pr_api.is_initialized:
