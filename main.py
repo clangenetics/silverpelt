@@ -65,17 +65,17 @@ extensions = bot.extensions
 
 
 def runbot():
-    if environ.get("ENVIRONMENT") == "bleeding":
+    if environ.get("NODE_ENV") == "prod":
         activity = hikari.Activity(
-            type=hikari.ActivityType.WATCHING, name=f"{gethostname()}")
-    elif environ.get("ENVIRONMENT") == "dev":
+            type=hikari.ActivityType.PLAYING, name="Clangen")
+    elif environ.get("NODE_ENV") == "dev":
         activity = hikari.Activity(type=hikari.ActivityType.WATCHING,
                                    name=check_output(
                                        ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
                                    )
     else:
         activity = hikari.Activity(
-            type=hikari.ActivityType.PLAYING, name="Clangen")
+            type=hikari.ActivityType.WATCHING, name=f"{gethostname()}")
     bot.run(activity=activity)
 
 
