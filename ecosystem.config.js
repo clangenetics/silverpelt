@@ -6,10 +6,12 @@ module.exports = {
         interpreter: "python3",
         log_file: "silverpelt.log",
         env_production: {
+            PORT: "8273",
             PREFIX: "$",
             NODE_ENV: "production"
         },
         env_development: {
+            PORT: "8000",
             PREFIX: "~",
             NODE_ENV: "development"
         }
