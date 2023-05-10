@@ -51,6 +51,8 @@ def nat_delta(delta: dt.timedelta | int | float | str, ms: bool = False) -> str:
 async def about(ctx: lightbulb.Context) -> None:
     commithash = subprocess.check_output(
         ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
+    commitmsg = subprocess.check_output(
+        ['git', 'show-branch', '--no-name', 'HEAD']).decode('ascii').strip()
 
     with (proc := Process()).oneshot():
         cpu_time = nat_delta(
@@ -73,6 +75,7 @@ async def about(ctx: lightbulb.Context) -> None:
         .set_author(name="Bot Information")
         .set_footer(f"Requested by {ctx.member.display_name}", icon=ctx.member.avatar_url)
         .add_field("Bot version", commithash, inline=True)
+        .add_field("Bot commit message", commitmsg, inline=True)
         .add_field("Python version", platform.python_version(), inline=True)
         .add_field("Hikari version", hikari.__version__, inline=True)
         .add_field("Lightbulb version", lightbulb.__version__, inline=True)
