@@ -103,7 +103,7 @@ async def about(ctx: lightbulb.Context) -> None:
     embed.add_field("Hikari version", f"`{hikari.__version__}`", inline=True)
     embed.add_field("Lightbulb version", f"`{lightbulb.__version__}`", inline=True)
     if uptime is not None:
-        embed.add_field("Uptime", uptime, inline=True)
+        embed.add_field("Uptime", f"`{uptime}`", inline=True)
     if cpu_percent is not None:
         embed.add_field("CPU usage", f"`{cpu_percent}`", inline=True)
     embed.add_field("CPU time", cpu_time, inline=True)
