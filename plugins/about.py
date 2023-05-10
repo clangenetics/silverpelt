@@ -89,7 +89,8 @@ async def about(ctx: lightbulb.Context) -> None:
         title="About Silverpelt",
         description=(
             f"Authored by {', '.join([f'<@{i}>' for i in ctx.bot.owner_ids])}. See all contributors on "
-            f"[GitHub](https://github.com/howlagon/silverpelt/graphs/contributors)."
+            f"[GitHub](https://github.com/howlagon/silverpelt/graphs/contributors). Licensed under "
+            f"the [MPL-2.0](https://github.com/howlagon/silverpelt/blob/master/LICENSE) license."
         ),
         url="https://github.com/howlagon/silverpelt",
         colour=0xe9d5b5
