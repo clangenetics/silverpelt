@@ -49,7 +49,7 @@ def nat_delta(delta: dt.timedelta | int | float | str, ms: bool = False) -> str:
 @plugin.command
 @lightbulb.command("about", "Sends bot info")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def about(ctx: lightbulb.Context) -> None:
+async def about(ctx: lightbulb.Context) -> None: # pylint: disable=too-many-locals,too-many-statements
 
     if environ.get('NODE_ENV') == 'prod' or environ.get('NODE_ENV') == 'dev':
         pm2info = ujson.loads(subprocess.check_output(

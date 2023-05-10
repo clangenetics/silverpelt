@@ -73,7 +73,7 @@ class App():
             "requestee": requestee,
             "channel": channel
         }
-    
+
     def remove_token(self, tokentype: str, token: str):
         if token == 'test':
             return
