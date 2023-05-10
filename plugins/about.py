@@ -1,5 +1,5 @@
 import datetime as dt
-
+from os import getpid, environ
 import platform
 import subprocess
 from psutil import Process, virtual_memory
@@ -7,6 +7,7 @@ from psutil import Process, virtual_memory
 
 import lightbulb
 import hikari
+import ujson
 from isodate import parse_duration
 
 plugin = lightbulb.Plugin("about")
@@ -49,10 +50,27 @@ def nat_delta(delta: dt.timedelta | int | float | str, ms: bool = False) -> str:
 @lightbulb.command("about", "Sends bot info")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def about(ctx: lightbulb.Context) -> None:
-    commithash = subprocess.check_output(
-        ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
-    commitmsg = subprocess.check_output(
-        ['git', 'show-branch', '--no-name', 'HEAD']).decode('ascii').strip()
+
+    if environ.get('NODE_ENV') == 'prod' or environ.get('NODE_ENV') == 'dev':
+        pm2info = ujson.loads(subprocess.check_output(
+        ['pm2', 'jlist']).decode('ascii').strip())
+    
+        for i in pm2info:
+            if i['pid'] == getpid():
+                pm2info = i
+                break
+        commithash = pm2info['pm2_env']['versioning']['revision'][0:7]
+        commitmsg = pm2info['pm2_env']['versioning']['comment'].split('\n')[0]
+        uptime = pm2info['pm2_env']['pm_uptime']
+        # Convert this to a string
+        uptime = nat_delta(uptime, ms=True)
+    else:
+        uptime = None
+        commithash = subprocess.check_output(
+            ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
+        commitmsg = subprocess.check_output(
+            ['git', 'show-branch', '--no-name', 'HEAD']).decode('ascii').strip()
+    
 
     with (proc := Process()).oneshot():
         cpu_time = nat_delta(
@@ -61,31 +79,32 @@ async def about(ctx: lightbulb.Context) -> None:
         mem_of_total = proc.memory_percent()
         mem_usage = mem_total * (mem_of_total / 100)
 
-    await ctx.respond(
-        hikari.Embed(
-            title="About Silverpelt",
-            description=(
-                f"Authored by {', '.join([f'<@{i}>' for i in ctx.bot.owner_ids])}. See all contributors on "
-                f"[GitHub](https://github.com/howlagon/silverpelt/graphs/contributors)."
-            ),
-            url="https://github.com/howlagon/silverpelt",
-            colour=0xe9d5b5
-        )
-        .set_thumbnail(ctx.bot.get_me().avatar_url)
-        .set_author(name="Bot Information")
-        .set_footer(f"Requested by {ctx.member.display_name}", icon=ctx.member.avatar_url)
-        .add_field("Bot version", commithash, inline=True)
-        .add_field("Latest change", commitmsg, inline=True)
-        .add_field("Python version", platform.python_version(), inline=True)
-        .add_field("Hikari version", hikari.__version__, inline=True)
-        .add_field("Lightbulb version", lightbulb.__version__, inline=True)
-        .add_field("CPU time", cpu_time, inline=True)
-        .add_field(
-            "Memory usage",
-            f"{mem_usage:,.3f}/{mem_total:,.0f} MiB ({mem_of_total:,.0f}%)",
-            inline=True,
-        )
+    embed = hikari.Embed(
+        title="About Silverpelt",
+        description=(
+            f"Authored by {', '.join([f'<@{i}>' for i in ctx.bot.owner_ids])}. See all contributors on "
+            f"[GitHub](https://github.com/howlagon/silverpelt/graphs/contributors)."
+        ),
+        url="https://github.com/howlagon/silverpelt",
+        colour=0xe9d5b5
     )
+    embed.set_thumbnail(ctx.bot.get_me().avatar_url)
+    embed.set_author(name="Bot Information")
+    embed.set_footer(f"Requested by {ctx.member.display_name}", icon=ctx.member.avatar_url)
+    embed.add_field("Bot version", commithash, inline=True)
+    embed.add_field("Latest change", commitmsg, inline=True)
+    embed.add_field("Python version", platform.python_version(), inline=True)
+    embed.add_field("Hikari version", hikari.__version__, inline=True)
+    embed.add_field("Lightbulb version", lightbulb.__version__, inline=True)
+    if uptime is not None:
+        embed.add_field("Uptime", uptime, inline=True)
+    embed.add_field("CPU time", cpu_time, inline=True)
+    embed.add_field(
+        "Memory usage",
+        f"{mem_usage:,.3f}/{mem_total:,.0f} MiB ({mem_of_total:,.0f}%)",
+        inline=True,
+    )
+    await ctx.respond(embed=embed)
 
 
 def load(bot):
