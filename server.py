@@ -23,7 +23,10 @@ class App():
 
     bot = None
 
-    tokens = {}
+    tokens = {
+        "log": {},
+        "clan": {},
+    }
 
 
     def __init__(self, _bot):
@@ -31,7 +34,7 @@ class App():
         App.bot = _bot
         self.app = App.app
 
-        self.add_token("test", "174200708818665472",
+        self.add_token("log", "test", "174200708818665472",
                        "174200708818665472", "1095692751598780526")
 
         if os.path.exists("temp"):
@@ -63,19 +66,26 @@ class App():
         config.accesslog = "-"
         asyncio.run(hypercorn.asyncio.serve(App.app, config))
 
-    def add_token(self, token: str, requester: str, requestee: str, channel: str, expire: float = time() + 7200):  # pylint: disable=too-many-arguments
-        App.tokens[token] = {
+    def add_token(self, tokentype: str, token: str, requester: str, requestee: str, channel: str, expire: float = time() + 7200):  # pylint: disable=too-many-arguments
+        App.tokens[tokentype][token] = {
             "expire": expire,
             "requester": requester,
             "requestee": requestee,
             "channel": channel
         }
+    
+    def remove_token(self, tokentype: str, token: str):
+        if token == 'test':
+            return
+        del App.tokens[tokentype][token]
 
-    def check_expiry(self, token: str):
-        if App.tokens[token].get("expire") < time():
-            del App.tokens[token]
+    def check_expiry(self, tokentype: str, token: str):
+        if token not in App.tokens[tokentype].keys():  # pylint: disable=consider-iterating-dictionary
+            return False
+        if App.tokens[tokentype][token].get("expire") < time():
+            self.remove_token(tokentype, token)
             return False
         return True
 
-    def get_token(self, token: str):
-        return App.tokens[token]
+    def get_token(self, tokentype: str, token: str):
+        return App.tokens[tokentype][token]

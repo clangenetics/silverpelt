@@ -1,8 +1,5 @@
 import os
-from time import time
 from quart import request, Quart
-
-
 
 def init(App: Quart):
     app = App.app
@@ -12,14 +9,11 @@ def init(App: Quart):
         token = request.headers.get("token")
         if token is None:
             return "401", 401
-        if token not in App.tokens.keys():  # pylint: disable=consider-iterating-dictionary
+        if not App.check_expiry('log', token):
             return "401", 401
 
-        if App.tokens[token].get("expire") < time():
-            del App.tokens[token]
-            return "401", 401
-
-        token = App.tokens[token]
+        _token = token
+        token = App.get_token('log', token)
         response = await request.get_json()
         if len(response) == 0:
             return "400", 400
@@ -70,4 +64,5 @@ def init(App: Quart):
         for filename in response.keys():
             os.remove(f"temp/{filename}")
 
+        App.remove_token('log', _token)
         return "200", 200
