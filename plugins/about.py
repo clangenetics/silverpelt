@@ -1,6 +1,6 @@
 import datetime as dt
 from os import getpid, environ
-from time import time
+import time
 import platform
 import subprocess
 from psutil import Process, virtual_memory
@@ -63,7 +63,7 @@ async def about(ctx: lightbulb.Context) -> None:
         commithash = pm2info['pm2_env']['versioning']['revision'][0:7]
         commitmsg = pm2info['pm2_env']['versioning']['comment'].split('\n')[0]
         starttime = pm2info['pm2_env']['pm_uptime']
-        uptime = int(time()) - starttime
+        uptime = time.mktime(dt.datetime.now().timetuple()) - starttime
         uptime = nat_delta(uptime, ms=True)
         cpu_percent = pm2info['monit']['cpu']
         cpu_percent = f"{cpu_percent}%"
