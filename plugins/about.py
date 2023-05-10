@@ -75,7 +75,7 @@ async def about(ctx: lightbulb.Context) -> None:
         .set_author(name="Bot Information")
         .set_footer(f"Requested by {ctx.member.display_name}", icon=ctx.member.avatar_url)
         .add_field("Bot version", commithash, inline=True)
-        .add_field("Bot commit message", commitmsg, inline=True)
+        .add_field("Latest change", commitmsg, inline=True)
         .add_field("Python version", platform.python_version(), inline=True)
         .add_field("Hikari version", hikari.__version__, inline=True)
         .add_field("Lightbulb version", lightbulb.__version__, inline=True)
