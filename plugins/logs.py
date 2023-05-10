@@ -35,7 +35,7 @@ async def logs(ctx: lightbulb.Context) -> None:
     )
     tokenmsgs[token] = message
 
-    server.add_token(token, requester, user, channel, exptime)
+    server.add_token('log', token, requester, user, channel, exptime)
 
 
 @plugin.listener(hikari.InteractionCreateEvent)
@@ -48,10 +48,10 @@ async def on_interaction(event: hikari.InteractionCreateEvent) -> None:
 
     token = event.interaction.custom_id.split("-")[1]
 
-    if not server.check_expiry(token):
+    if not server.check_expiry('log', token):
         return await event.interaction.respond("This token has expired.", ephemeral=True)
 
-    if event.interaction.user.id != server.get_token(token)["requestee"]:
+    if event.interaction.user.id != server.get_token('log', token)["requestee"]:
         return await event.interaction.respond("You are not the requester of this token.", ephemeral=True)
 
     await event.interaction.create_initial_response(
