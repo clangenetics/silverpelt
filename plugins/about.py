@@ -61,8 +61,8 @@ async def about(ctx: lightbulb.Context) -> None:
                 break
         commithash = pm2info['pm2_env']['versioning']['revision'][0:7]
         commitmsg = pm2info['pm2_env']['versioning']['comment'].split('\n')[0]
-        uptime = pm2info['pm2_env']['pm_uptime']
-        # Convert this to a string
+        starttime = pm2info['pm2_env']['pm_uptime']
+        uptime = aware_now() - dt.datetime.fromtimestamp(starttime / 1000)
         uptime = nat_delta(uptime, ms=True)
         cpu_percent = pm2info['monit']['cpu']
         cpu_percent = f"{cpu_percent}%"
