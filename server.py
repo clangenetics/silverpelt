@@ -40,10 +40,9 @@ class App():
     def start(self):
         config = hypercorn.config.Config()
         if os.environ.get("ENVIRONMENT") == "bleeding":
-            config.bind = ["localhost"]
+            config.bind = f"localhost:{os.environ.get('PORT')}"
         else:
-            config.bind = [f'172.17.0.1']
-        config.port = os.environ.get("PORT")
+            config.bind = f'172.17.0.1:{os.environ.get("PORT")}'
         config.accesslog = "-"
         asyncio.run(hypercorn.asyncio.serve(App.app, config))
 
