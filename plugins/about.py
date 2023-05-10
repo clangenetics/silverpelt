@@ -1,6 +1,5 @@
 import datetime as dt
 from os import getpid, environ
-import time
 import platform
 import subprocess
 from psutil import Process, virtual_memory
@@ -55,7 +54,7 @@ async def about(ctx: lightbulb.Context) -> None:
     if environ.get('NODE_ENV') == 'prod' or environ.get('NODE_ENV') == 'dev':
         pm2info = ujson.loads(subprocess.check_output(
         ['pm2', 'jlist']).decode('ascii').strip())
-    
+
         for i in pm2info:
             if i['pid'] == getpid():
                 pm2info = i
@@ -63,8 +62,11 @@ async def about(ctx: lightbulb.Context) -> None:
         commithash = pm2info['pm2_env']['versioning']['revision'][0:7]
         commitmsg = pm2info['pm2_env']['versioning']['comment'].split('\n')[0]
         starttime = pm2info['pm2_env']['pm_uptime']
-        uptime = time.mktime(dt.datetime.now().timetuple()) - starttime
-        uptime = nat_delta(uptime, ms=True)
+        starttime = dt.datetime.fromtimestamp(int(starttime) / 1000)
+        uptime = str(dt.timedelta(seconds=(dt.datetime.now() - starttime).total_seconds()))
+        uptime = uptime.split('.', maxsplit=1)[0]
+        if uptime.startswith('0:'):
+            uptime = uptime[2:]
         cpu_percent = pm2info['monit']['cpu']
         cpu_percent = f"{cpu_percent}%"
     else:
@@ -74,7 +76,7 @@ async def about(ctx: lightbulb.Context) -> None:
             ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
         commitmsg = subprocess.check_output(
             ['git', 'show-branch', '--no-name', 'HEAD']).decode('ascii').strip()
-    
+
 
     with (proc := Process()).oneshot():
         cpu_time = nat_delta(

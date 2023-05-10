@@ -2,9 +2,9 @@ import os
 import logging
 import shutil
 from time import time
+import asyncio
 from quart import Quart, request  # pylint: disable=ungrouped-imports
 import hypercorn
-import asyncio
 import hikari
 from quart.logging import default_handler
 
@@ -36,7 +36,7 @@ class App():
         if os.path.exists("temp"):
             shutil.rmtree("temp")
         os.mkdir("temp")
-    
+
     def start(self):
         config = hypercorn.config.Config()
         if os.environ.get("NODE_ENV") == "dev" or os.environ.get("NODE_ENV") == "prod":
