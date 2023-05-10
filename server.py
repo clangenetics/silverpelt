@@ -39,7 +39,7 @@ class App():
     
     def start(self):
         config = hypercorn.config.Config()
-        if os.environ.get("ENVIRONMENT") is "bleeding":
+        if os.environ.get("ENVIRONMENT") == "bleeding":
             config.bind = ["localhost"]
         else:
             config.bind = [f'172.17.0.1']
