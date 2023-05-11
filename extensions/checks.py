@@ -9,7 +9,8 @@ def techhelp_only(ctx: lightbulb.Context) -> bool:
         1004503968191352932, # sr tech helper
         1054938996599427122, # tech helper
         1004042179255222272, # contributor
-        1038011420157169715 # moderator
+        1038011420157169715, # moderator
+        1100059987495100496 # dismod contrib
     ]
 
     for role in ctx.member.get_roles():
