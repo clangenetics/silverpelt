@@ -30,6 +30,11 @@ bot = lightbulb.BotApp(
     banner=None,
 )
 
+@bot.listen(hikari.StartedEvent)
+async def on_start(event: hikari.StartedEvent) -> None:
+    user = await event.app.rest.fetch_my_user()
+    print(f"Logged in as {user.username}#{user.discriminator}")
+
 
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_error(event: lightbulb.CommandErrorEvent) -> None:
