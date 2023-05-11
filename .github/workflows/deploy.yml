@@ -29,5 +29,7 @@ jobs:
         run: pm2 deploy development
         if: github.ref == 'refs/heads/master'
       - name: Deploy to Prod
-        run: pm2 deploy production
+        run: |
+          pm2 deploy production
+          pm2 deploy fringekit
         if: github.ref == 'refs/heads/prod'

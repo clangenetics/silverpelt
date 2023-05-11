@@ -14,7 +14,12 @@ module.exports = {
             PORT: "8372",
             PREFIX: "~",
             NODE_ENV: "dev"
-        }
+        },
+        env_fringe: {
+            PORT: "8274",
+            PREFIX: "$",
+            NODE_ENV: "prod"
+        },
     }],
 
     deploy: {
@@ -33,6 +38,14 @@ module.exports = {
             repo: "git@github.com:clangen-devs/silverpelt.git",
             path: "/home/luna/servers/silverpelt-dev",
             "post-deploy": "npm install && pip install -r requirements.txt && pm2 startOrRestart ecosystem.config.js --env development"
-        }
+        },
+        fringekit: {
+            user: "luna",
+            host: "silverpelt.lvna.me",
+            ref: "origin/prod",
+            repo: "git@github.com:clangen-devs/silverpelt.git",
+            path: "/home/luna/servers/fringekit",
+            "post-deploy": "npm install && pip install -r requirements.txt && pm2 startOrRestart ecosystem.config.js --env fringe"
+        },
     }
 }
