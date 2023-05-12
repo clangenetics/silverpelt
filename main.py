@@ -1,6 +1,7 @@
-from os import environ
+import os
 import traceback
 import threading
+from shutil import rmtree
 from socket import gethostname
 from subprocess import check_output
 import lightbulb
@@ -10,21 +11,26 @@ from server import App
 
 load_dotenv(".env")
 
-token = environ.get("DISCORD_TOKEN")
+token = os.environ.get("DISCORD_TOKEN")
 if token is None:
     raise Exception("No token provided") # pylint: disable=broad-exception-raised
-if environ.get("GITHUB_TOKEN") is None:
+if os.environ.get("GITHUB_TOKEN") is None:
     raise Exception("No github token provided") # pylint: disable=broad-exception-raised
-prefix = environ.get("PREFIX")
+prefix = os.environ.get("PREFIX")
 if prefix is None:
     prefix = "!"
+
+
+if os.path.exists("temp"):
+    rmtree("temp")
+os.mkdir("temp")
 
 bot = lightbulb.BotApp(
     token=token,
     prefix=prefix,
     intents=hikari.Intents.ALL_UNPRIVILEGED + hikari.Intents.MESSAGE_CONTENT,
     logs=None,
-    owner_ids=[174200708818665472, 266751215767912463],
+    owner_ids=[174200708818665472],#, 266751215767912463],
     suppress_optimization_warning=True,
     help_slash_command=True,
     banner=None,
@@ -42,9 +48,18 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         # Be sure to ping the owners
         _traceback = event.exception.__cause__ or event.exception
         stack = ''.join(traceback.format_tb(_traceback.__traceback__))
-        return await event.context.respond(
-            f"Something went wrong when running the command {event.context.command.name}. \n ```{_traceback}\n\n{stack}```\n{', '.join([f'<@{i}>' for i in bot.owner_ids])}",
-            user_mentions=bot.owner_ids)
+        try:
+            await event.context.respond(
+                f"Something went wrong when running the command {event.context.command.name}. \n ```{_traceback}\n\n{stack}```\n{', '.join([f'<@{i}>' for i in bot.owner_ids])}",
+                user_mentions=bot.owner_ids)
+            print(_traceback)
+            print(stack)
+            return
+        except hikari.errors.BadRequestError as e:
+            await event.context.respond(f"Something went wrong when running the command {event.context.command.name}. \n ```{_traceback}```")
+            print(_traceback)
+            print(stack)
+            return
     exception = event.exception.__cause__ or event.exception
     # if isinstance(exception, lightbulb.MissingRequiredArgument):
     # await event.context.respond(f"Missing required argument:
@@ -53,7 +68,6 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         pass
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
         await event.context.respond(f"Command is on cooldown for {round(exception.retry_after, 1)} seconds")
-
 
 @bot.command
 @lightbulb.command("ping", "Calls the bot with its delay")
@@ -80,10 +94,10 @@ extensions = bot.extensions
 
 
 def runbot():
-    if environ.get("NODE_ENV") == "prod":
+    if os.environ.get("NODE_ENV") == "prod":
         activity = hikari.Activity(
             type=hikari.ActivityType.PLAYING, name="Clangen")
-    elif environ.get("NODE_ENV") == "dev":
+    elif os.environ.get("NODE_ENV") == "dev":
         activity = hikari.Activity(type=hikari.ActivityType.WATCHING,
                                    name=check_output(
                                        ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]

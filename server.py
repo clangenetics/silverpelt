@@ -37,9 +37,6 @@ class App():
         self.add_token("log", "test", "174200708818665472",
                        "174200708818665472", "1095692751598780526")
 
-        if os.path.exists("temp"):
-            shutil.rmtree("temp")
-        os.mkdir("temp")
 
         # Import all routes
         def recurse(path):
