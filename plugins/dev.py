@@ -10,8 +10,8 @@ async def test(ctx):
     channel = await ctx.app.rest.fetch_channel(ctx.get_channel().parent_id)
     print(channel)
 
-def load(bot):
-    bot.add_plugin(plugin)
+# def load(bot):
+#     bot.add_plugin(plugin)
 
-def unload(bot):
-    bot.remove_plugin(plugin)
+# def unload(bot):
+#     bot.remove_plugin(plugin)
