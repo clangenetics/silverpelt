@@ -1,6 +1,5 @@
 import asyncio
 import lightbulb
-import hikari
 from extensions.checks import techhelp_only
 
 plugin = lightbulb.Plugin("editmsg")
@@ -26,6 +25,7 @@ async def editmsg(ctx: lightbulb.Context) -> None:
         return
     await ctx.event.message.referenced_message.edit(content=ctx.options.content)
     await ctx.event.message.delete()
+
 
 def load(bot):
     bot.add_plugin(plugin)
