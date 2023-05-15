@@ -30,6 +30,10 @@ async def checksave(ctx: lightbulb.Context) -> None:
     elif ctx.options.file is not None:
         url = ctx.options.file.url
         filename = ctx.options.file.filename
+    if ctx.event.message.referenced_message is not None:
+        if len(ctx.event.message.referenced_message.attachments) > 0:
+            url = ctx.event.message.referenced_message.attachments[0].url
+            filename = ctx.event.message.referenced_message.attachments[0].filename
     if url is None:
         await ctx.respond("No file or url provided")
         return
@@ -99,6 +103,10 @@ async def checksave(ctx: lightbulb.Context) -> None:
             catdata = f.read()
         catjson = ujson.loads(catdata)
 
+        cats = {}
+        for cat in catjson:
+            cats[cat['ID']] = cat
+
         for cat in catjson:
 
             if cat['ID'] not in clanjson['clan_cats']:
@@ -107,7 +115,7 @@ async def checksave(ctx: lightbulb.Context) -> None:
             # check for bad relationships
             if isinstance(cat['mate'], list):
                 for mate in cat['mate']:
-                    if mate not in catjson:
+                    if mate not in cats:
                         warnings.append(
                             f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that doesn't exist: `{mate}`")
 
@@ -118,7 +126,7 @@ async def checksave(ctx: lightbulb.Context) -> None:
                         errors.append(
                             f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also an adoptive parent: `{mate}`")
             elif isinstance(cat['mate'], str):
-                if cat['mate'] not in catjson:
+                if cat['mate'] not in cats:
                     warnings.append(
                         f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that doesn't exist: `{cat['mate']}`")
 
