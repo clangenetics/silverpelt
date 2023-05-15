@@ -21,19 +21,14 @@ class App():
         "DISCORD_TOKEN"), logs=None,
         banner=None, suppress_optimization_warning=True).rest
 
-
     tokens = {
         "log": {},
         "clan": {},
     }
 
-
     def __init__(self, bot):
         self.app = App.app
         self.bot = bot
-
-        self.add_token("log", "test", "174200708818665472",
-                       "174200708818665472", "1095692751598780526")
 
         if os.path.exists("temp"):
             shutil.rmtree("temp")

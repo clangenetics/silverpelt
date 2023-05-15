@@ -49,11 +49,11 @@ def nat_delta(delta: dt.timedelta | int | float | str, ms: bool = False) -> str:
 @plugin.command
 @lightbulb.command("about", "Sends bot info")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def about(ctx: lightbulb.Context) -> None: # pylint: disable=too-many-locals,too-many-statements
+async def about(ctx: lightbulb.Context) -> None:  # pylint: disable=too-many-locals,too-many-statements
 
     if environ.get('NODE_ENV') == 'prod' or environ.get('NODE_ENV') == 'dev':
         pm2info = ujson.loads(subprocess.check_output(
-        ['pm2', 'jlist']).decode('ascii').strip())
+            ['pm2', 'jlist']).decode('ascii').strip())
 
         for i in pm2info:
             if i['pid'] == getpid():
@@ -63,7 +63,8 @@ async def about(ctx: lightbulb.Context) -> None: # pylint: disable=too-many-loca
         commitmsg = pm2info['pm2_env']['versioning']['comment'].split('\n')[0]
         starttime = pm2info['pm2_env']['pm_uptime']
         starttime = dt.datetime.fromtimestamp(int(starttime) / 1000)
-        uptime = str(dt.timedelta(seconds=(dt.datetime.now() - starttime).total_seconds()))
+        uptime = str(dt.timedelta(
+            seconds=(dt.datetime.now() - starttime).total_seconds()))
         uptime = uptime.split('.', maxsplit=1)[0]
         if uptime.startswith('0:'):
             uptime = uptime[2:]
@@ -76,7 +77,6 @@ async def about(ctx: lightbulb.Context) -> None: # pylint: disable=too-many-loca
             ['git', 'rev-parse', 'HEAD']).decode('ascii').strip()[0:7]
         commitmsg = subprocess.check_output(
             ['git', 'show-branch', '--no-name', 'HEAD']).decode('ascii').strip()
-
 
     with (proc := Process()).oneshot():
         cpu_time = nat_delta(
@@ -107,12 +107,15 @@ async def about(ctx: lightbulb.Context) -> None: # pylint: disable=too-many-loca
     )
     embed.set_thumbnail(ctx.bot.get_me().avatar_url)
     embed.set_author(name="Bot Information")
-    embed.set_footer(f"Requested by {ctx.member.display_name}", icon=ctx.member.avatar_url)
+    embed.set_footer(
+        f"Requested by {ctx.member.display_name}", icon=ctx.member.avatar_url)
     embed.add_field("Bot version", f"`{commithash}`", inline=True)
     embed.add_field("Latest change", commitmsg, inline=True)
-    embed.add_field("Python version", f"`{platform.python_version()}`", inline=True)
+    embed.add_field("Python version",
+                    f"`{platform.python_version()}`", inline=True)
     embed.add_field("Hikari version", f"`{hikari.__version__}`", inline=True)
-    embed.add_field("Lightbulb version", f"`{lightbulb.__version__}`", inline=True)
+    embed.add_field("Lightbulb version",
+                    f"`{lightbulb.__version__}`", inline=True)
     if uptime is not None:
         embed.add_field("Uptime", f"`{uptime}`", inline=True)
     if cpu_percent is not None:

@@ -14,9 +14,11 @@ load_dotenv(".env")
 
 token = os.environ.get("DISCORD_TOKEN")
 if token is None:
-    raise Exception("No token provided") # pylint: disable=broad-exception-raised
+    raise Exception(
+        "No token provided")  # pylint: disable=broad-exception-raised
 if os.environ.get("GITHUB_TOKEN") is None:
-    raise Exception("No github token provided") # pylint: disable=broad-exception-raised
+    raise Exception(
+        "No github token provided")  # pylint: disable=broad-exception-raised
 prefix = os.environ.get("PREFIX")
 if prefix is None:
     prefix = "!"
@@ -31,11 +33,12 @@ bot = lightbulb.BotApp(
     prefix=prefix,
     intents=hikari.Intents.ALL_UNPRIVILEGED + hikari.Intents.MESSAGE_CONTENT,
     logs=None,
-    owner_ids=[174200708818665472],#, 266751215767912463],
+    owner_ids=[174200708818665472],  # , 266751215767912463],
     suppress_optimization_warning=True,
     help_slash_command=True,
     banner=None,
 )
+
 
 @bot.listen(hikari.StartedEvent)
 async def on_start(event: hikari.StartedEvent) -> None:
@@ -69,6 +72,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         pass
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
         await event.context.respond(f"Command is on cooldown for {round(exception.retry_after, 1)} seconds")
+
 
 @bot.command
 @lightbulb.command("ping", "Calls the bot with its delay")

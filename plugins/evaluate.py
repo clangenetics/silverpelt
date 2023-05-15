@@ -43,9 +43,10 @@ async def evaluate(ctx: lightbulb.Context) -> None:
         if desc != "":
             asyncio.create_task(updmessage(desc))
 
-    def send(*args, **kwargs): # pylint: disable=unused-variable
+    def send(*args, **kwargs):  # pylint: disable=unused-variable
         asyncio.create_task(ctx.respond(*args, **kwargs))
-    def runawait(command): # pylint: disable=unused-variable
+
+    def runawait(command):  # pylint: disable=unused-variable
         asyncio.create_task(command)
     try:
         exec(code)  # pylint: disable=exec-used

@@ -1,9 +1,9 @@
 import os
 import shutil
-import ujson
 import re
 from uuid import uuid4
 import zipfile
+import ujson
 import aiohttp
 import hikari
 import lightbulb
@@ -46,8 +46,6 @@ async def checksave(ctx: lightbulb.Context) -> None:
             except zipfile.BadZipFile:
                 await ctx.respond("Invalid zip file")
                 return
-    
-
 
     info = {}
     warnings = []
@@ -65,7 +63,7 @@ async def checksave(ctx: lightbulb.Context) -> None:
         with open(f"{filedir}/saves/currentclan.txt", "r") as f:
             clan = f.read()
         searchdir = f"{filedir}/saves"
-    
+
     if re.match(nullregex, clan):
         criticals.append("`currentclan.txt` is nullified")
 
@@ -77,13 +75,11 @@ async def checksave(ctx: lightbulb.Context) -> None:
             await ctx.respond("No save file found")
             return
 
-
-
     info['Clan Name'] = f"{clan}clan"
-    
+
     if not os.path.exists(f"{searchdir}/{clan}clan.json"):
         criticals.append(f"Missing `{clan}clan.json`")
-    
+
     try:
         with open(f"{searchdir}/{clan}clan.json", "r") as f:
             clandata = f.read()
@@ -94,8 +90,7 @@ async def checksave(ctx: lightbulb.Context) -> None:
             criticals.append(f"`{clan}clan.json` is nullified")
         else:
             criticals.append(f"`{clan}clan.json` is not valid json")
-        
-    
+
     try:
         with open(f"{searchdir}/{clan}/clan_cats.json", "r") as f:
             catdata = f.read()
@@ -110,18 +105,23 @@ async def checksave(ctx: lightbulb.Context) -> None:
             if isinstance(cat['mate'], list):
                 for mate in cat['mate']:
                     if mate not in catjson:
-                        warnings.append(f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that doesn't exist: `{mate}`")
-                    
-                    if mate == cat['parent1'] or mate == cat['parent2']:
-                        warnings.append(f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also a parent: `{mate}`")
+                        warnings.append(
+                            f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that doesn't exist: `{mate}`")
+
+                    if mate in [cat['parent1'], cat['parent2']]:
+                        warnings.append(
+                            f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also a parent: `{mate}`")
                     if mate in cat['adoptive_parents']:
-                        warnings.append(f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also an adoptive parent: `{mate}`")
+                        warnings.append(
+                            f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also an adoptive parent: `{mate}`")
             elif isinstance(cat['mate'], str):
                 if cat['mate'] not in catjson:
-                    warnings.append(f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that doesn't exist: `{cat['mate']}`")
-                
-                if cat['mate'] == cat['parent1'] or cat['mate'] == cat['parent2']:
-                    warnings.append(f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also a parent: `{cat['mate']}`")
+                    warnings.append(
+                        f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that doesn't exist: `{cat['mate']}`")
+
+                if cat['mate'] in [cat['parent1'], cat['parent2']]:
+                    warnings.append(
+                        f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also a parent: `{cat['mate']}`")
                 # if cat['mate'] in cat['adoptive_parents']:
                 #     warnings.append(f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also an adoptive parent: `{cat['mate']}`")
     except ujson.JSONDecodeError:
@@ -141,9 +141,9 @@ async def checksave(ctx: lightbulb.Context) -> None:
 
                 with open(f"{folder}/{file}", "r") as f:
                     data = f.read()
-                
+
                 _folder = folder.replace(f"{searchdir}/{clan}", "")
-                
+
                 if re.match(nullregex, data):
                     criticals.append(f"`{_folder}/{file}` is nullified")
                 elif file.endswith('.json'):
@@ -152,9 +152,7 @@ async def checksave(ctx: lightbulb.Context) -> None:
                     except ujson.JSONDecodeError:
                         errors.append(f"`{_folder}/{file}` is not valid json")
 
-
     recurse(f"{searchdir}/{clan}")
-
 
     embed = hikari.Embed(
         title=f"Report for {clan}clan",
@@ -163,28 +161,23 @@ async def checksave(ctx: lightbulb.Context) -> None:
 
     for infostr, data in info.items():
         embed.add_field(name=infostr, value=data, inline=False)
-    
+
     if len(warnings) > 0:
-        embed.add_field(name="Warnings", value="\n".join(warnings), inline=False)
-    
+        embed.add_field(name="Warnings", value="\n".join(
+            warnings), inline=False)
+
     if len(errors) > 0:
         embed.color = 0xFFFF00
         embed.add_field(name="Errors", value="\n".join(errors), inline=False)
-    
+
     if len(criticals) > 0:
         embed.color = 0xFF0000
-        embed.add_field(name="Criticals", value="\n".join(criticals), inline=False)
+        embed.add_field(name="Criticals", value="\n".join(
+            criticals), inline=False)
 
     await ctx.respond(embed=embed)
 
     shutil.rmtree(filedir)
-
-    return
-
-
-
-    
-
 
 
 def load(bot):
