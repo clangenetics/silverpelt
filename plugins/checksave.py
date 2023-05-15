@@ -112,10 +112,10 @@ async def checksave(ctx: lightbulb.Context) -> None:
                             f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that doesn't exist: `{mate}`")
 
                     if mate in [cat['parent1'], cat['parent2']]:
-                        warnings.append(
+                        errors.append(
                             f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also a parent: `{mate}`")
                     if mate in cat['adoptive_parents']:
-                        warnings.append(
+                        errors.append(
                             f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also an adoptive parent: `{mate}`")
             elif isinstance(cat['mate'], str):
                 if cat['mate'] not in catjson:
@@ -123,7 +123,7 @@ async def checksave(ctx: lightbulb.Context) -> None:
                         f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that doesn't exist: `{cat['mate']}`")
 
                 if cat['mate'] in [cat['parent1'], cat['parent2']]:
-                    warnings.append(
+                    errors.append(
                         f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also a parent: `{cat['mate']}`")
                 # if cat['mate'] in cat['adoptive_parents']:
                 #     warnings.append(f"Cat `{cat['name_prefix']}{cat['name_suffix']}` has a mate that is also an adoptive parent: `{cat['mate']}`")
@@ -166,17 +166,24 @@ async def checksave(ctx: lightbulb.Context) -> None:
         embed.add_field(name=infostr, value=data, inline=False)
 
     if len(warnings) > 0:
-        embed.add_field(name="Warnings", value="\n".join(
-            warnings), inline=False)
+        text = "\n".join(warnings)
+        if len(text) > 1024:
+            text = text[:1021] + "..."
+        embed.add_field(name="Warnings", value=text, inline=False)
 
     if len(errors) > 0:
         embed.color = 0xFFFF00
-        embed.add_field(name="Errors", value="\n".join(errors), inline=False)
+        text = "\n".join(errors)
+        if len(text) > 1024:
+            text = text[:1021] + "..."
+        embed.add_field(name="Errors", value=text, inline=False)
 
     if len(criticals) > 0:
         embed.color = 0xFF0000
-        embed.add_field(name="Criticals", value="\n".join(
-            criticals), inline=False)
+        text = "\n".join(criticals)
+        if len(text) > 1024:
+            text = text[:1021] + "..."
+        embed.add_field(name="Criticals", value=text, inline=False)
 
     await ctx.respond(embed=embed)
 
