@@ -4,6 +4,7 @@ import threading
 from shutil import rmtree
 from socket import gethostname
 from subprocess import check_output
+import asyncio
 import lightbulb
 import hikari
 from dotenv import load_dotenv
@@ -55,7 +56,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
             print(_traceback)
             print(stack)
             return
-        except hikari.errors.BadRequestError as e:
+        except hikari.errors.BadRequestError:
             await event.context.respond(f"Something went wrong when running the command {event.context.command.name}. \n ```{_traceback}```")
             print(_traceback)
             print(stack)
@@ -105,7 +106,9 @@ def runbot():
     else:
         activity = hikari.Activity(
             type=hikari.ActivityType.WATCHING, name=f"{gethostname()}")
-    bot.run(activity=activity)
+    evloop = asyncio.new_event_loop()
+    asyncio.set_event_loop(evloop)
+    evloop.run_until_complete(bot.run(activity=activity))
 
 
 bot_thread = threading.Thread(target=runbot)

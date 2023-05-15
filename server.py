@@ -17,10 +17,6 @@ class App():
                 template_folder='templates')
     logging.getLogger("quart.app").removeHandler(default_handler)
 
-    rest = hikari.RESTBot(token=os.environ.get(
-        "DISCORD_TOKEN"), logs=None,
-        banner=None, suppress_optimization_warning=True).rest
-
     bot = None
 
     tokens = {

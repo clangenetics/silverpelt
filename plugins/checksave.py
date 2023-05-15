@@ -73,8 +73,10 @@ async def checksave(ctx: lightbulb.Context) -> None:
             if os.path.isdir(f"{searchdir}/{file}"):
                 clan = file
                 break
+        if clan is None:
+            await ctx.respond("No save file found")
+            return
 
-    await ctx.respond(f"Save file found for clan {clan}")
 
 
     info['Clan Name'] = f"{clan}clan"
