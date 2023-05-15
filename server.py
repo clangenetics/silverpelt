@@ -17,7 +17,10 @@ class App():
                 template_folder='templates')
     logging.getLogger("quart.app").removeHandler(default_handler)
 
-    bot = None
+    rest = hikari.RESTBot(token=os.environ.get(
+        "DISCORD_TOKEN"), logs=None,
+        banner=None, suppress_optimization_warning=True).rest
+
 
     tokens = {
         "log": {},
@@ -25,14 +28,15 @@ class App():
     }
 
 
-    def __init__(self, _bot):
-        self.bot = _bot
-        App.bot = _bot
+    def __init__(self):
         self.app = App.app
 
         self.add_token("log", "test", "174200708818665472",
                        "174200708818665472", "1095692751598780526")
 
+        if os.path.exists("temp"):
+            shutil.rmtree("temp")
+        os.mkdir("temp")
 
         # Import all routes
         def recurse(path):
