@@ -8,12 +8,15 @@ import aiohttp
 import hikari
 import lightbulb
 
+from extensions.checks import techhelp_only
+
 plugin = lightbulb.Plugin("checksave")
 
 nullregex = r"(?:\x00)+"
 
 
 @plugin.command
+@lightbulb.add_checks(techhelp_only)
 @lightbulb.option("file", "file", type=hikari.Attachment, required=False)
 @lightbulb.option("url", "url", type=hikari.URL, required=False)
 @lightbulb.command("checksave", "Check save file integrety")
