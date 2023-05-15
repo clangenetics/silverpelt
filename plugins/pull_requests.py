@@ -7,6 +7,7 @@ import lightbulb
 
 plugin = lightbulb.Plugin("pull_requests")
 
+
 class API:
     def __init__(self) -> None:
         self.is_initialized = False
@@ -95,7 +96,9 @@ class API:
         )
         return embed
 
+
 pr_api = API()
+
 
 @plugin.listener(hikari.MessageCreateEvent)
 async def on_message_create(event: hikari.MessageCreateEvent) -> None:

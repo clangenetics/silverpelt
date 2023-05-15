@@ -4,6 +4,7 @@ import threading
 from shutil import rmtree
 from socket import gethostname
 from subprocess import check_output
+import asyncio
 import lightbulb
 import hikari
 from dotenv import load_dotenv
@@ -13,9 +14,11 @@ load_dotenv(".env")
 
 token = os.environ.get("DISCORD_TOKEN")
 if token is None:
-    raise Exception("No token provided") # pylint: disable=broad-exception-raised
+    raise Exception(
+        "No token provided")  # pylint: disable=broad-exception-raised
 if os.environ.get("GITHUB_TOKEN") is None:
-    raise Exception("No github token provided") # pylint: disable=broad-exception-raised
+    raise Exception(
+        "No github token provided")  # pylint: disable=broad-exception-raised
 prefix = os.environ.get("PREFIX")
 if prefix is None:
     prefix = "!"
@@ -30,11 +33,12 @@ bot = lightbulb.BotApp(
     prefix=prefix,
     intents=hikari.Intents.ALL_UNPRIVILEGED + hikari.Intents.MESSAGE_CONTENT,
     logs=None,
-    owner_ids=[174200708818665472],#, 266751215767912463],
+    owner_ids=[174200708818665472],  # , 266751215767912463],
     suppress_optimization_warning=True,
     help_slash_command=True,
     banner=None,
 )
+
 
 @bot.listen(hikari.StartedEvent)
 async def on_start(event: hikari.StartedEvent) -> None:
@@ -55,7 +59,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
             print(_traceback)
             print(stack)
             return
-        except hikari.errors.BadRequestError as e:
+        except hikari.errors.BadRequestError:
             await event.context.respond(f"Something went wrong when running the command {event.context.command.name}. \n ```{_traceback}```")
             print(_traceback)
             print(stack)
@@ -68,6 +72,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         pass
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
         await event.context.respond(f"Command is on cooldown for {round(exception.retry_after, 1)} seconds")
+
 
 @bot.command
 @lightbulb.command("ping", "Calls the bot with its delay")
@@ -105,7 +110,9 @@ def runbot():
     else:
         activity = hikari.Activity(
             type=hikari.ActivityType.WATCHING, name=f"{gethostname()}")
-    bot.run(activity=activity)
+    evloop = asyncio.new_event_loop()
+    asyncio.set_event_loop(evloop)
+    evloop.run_until_complete(bot.run(activity=activity))
 
 
 bot_thread = threading.Thread(target=runbot)

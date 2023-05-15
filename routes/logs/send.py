@@ -1,6 +1,7 @@
 import os
 from quart import request, Quart
 
+
 def init(App: Quart):
     app = App.app
 
