@@ -28,8 +28,9 @@ class App():
     }
 
 
-    def __init__(self):
+    def __init__(self, bot):
         self.app = App.app
+        self.bot = bot
 
         self.add_token("log", "test", "174200708818665472",
                        "174200708818665472", "1095692751598780526")
