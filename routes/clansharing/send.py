@@ -40,5 +40,5 @@ def init(App: Quart):
 
         os.remove(f"temp/{token['requester']}/save.zip")
 
-        # App.remove_token('save', _token)
+        App.remove_token('save', _token)
         return "200", 200

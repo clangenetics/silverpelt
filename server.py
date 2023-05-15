@@ -23,7 +23,7 @@ class App():
 
     tokens = {
         "log": {},
-        "save": {"8df7da7": {'expire': 1684174056.6544602, 'requester': 174200708818665472, 'requestee': 174200708818665472, 'channel': 1105643727353032714}},
+        "save": {},
     }
 
     def __init__(self, bot):
