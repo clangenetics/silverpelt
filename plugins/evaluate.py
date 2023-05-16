@@ -12,7 +12,7 @@ plugin = lightbulb.Plugin("evaluate")
 @lightbulb.command("eval", "Evaluates a python expression", hidden=True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def evaluate(ctx: lightbulb.Context) -> None:
-    code = ctx.event.content[len(ctx.prefix) + 5:]
+    code = ctx.event.content[len(ctx.prefix) + len(ctx.invoked_with) + 1:]
     match_blockquote = search(r"^```(?:(?:py|python)\n)?([^`]+?)```", code)
     match_inline = search(r"^`([^`]+)`", code)
     if match_blockquote is not None:
