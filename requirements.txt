@@ -7,3 +7,4 @@ quart==0.18.4
 ujson==5.7.0
 psutil==5.9.5
 isodate==0.6.1
+quart-uploads==0.0.1
