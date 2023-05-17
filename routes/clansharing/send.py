@@ -4,7 +4,7 @@ import quart_uploads
 
 def init(App: Quart):
     app = App.app
-    
+
 
     uploadset = quart_uploads.UploadSet('save', ('zip',), lambda app: "temp")
     quart_uploads.configure_uploads(app, upload_sets=uploadset)
@@ -27,7 +27,7 @@ def init(App: Quart):
 
         if 'file' not in files:
             return "400", 400
-        
+
         await uploadset.save(files['file'], folder=str(token['requester']), name="save.zip")
 
         channel = await App.rest.fetch_channel(token["channel"])

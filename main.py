@@ -14,11 +14,11 @@ load_dotenv(".env")
 
 token = os.environ.get("DISCORD_TOKEN")
 if token is None:
-    raise Exception(
-        "No token provided")  # pylint: disable=broad-exception-raised
+    raise ValueError(
+        "No token provided")
 if os.environ.get("GITHUB_TOKEN") is None:
-    raise Exception(
-        "No github token provided")  # pylint: disable=broad-exception-raised
+    raise ValueError(
+        "No github token provided")
 prefix = os.environ.get("PREFIX")
 if prefix is None:
     prefix = "!"

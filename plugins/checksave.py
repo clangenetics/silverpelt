@@ -23,6 +23,10 @@ sha1regex = r"[a-fA-F\d]{40}"
 @lightbulb.command("checksave", "Check save file integrety")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def checksave(ctx: lightbulb.Context) -> None:
+    secondrun = False
+    if ctx.event.message.content == "Attempted to fix saves":
+        secondrun = True
+
     filedir = f"temp/{uuid4().hex[:12]}"
     os.mkdir(filedir)
     if ctx.options.url is not None:
@@ -97,8 +101,6 @@ async def checksave(ctx: lightbulb.Context) -> None:
             f.write(clan)
         attemptedToFix = True
 
-        
-
     info['Clan Name'] = f"{clan}clan"
 
     clanjson = None
@@ -113,10 +115,11 @@ async def checksave(ctx: lightbulb.Context) -> None:
         except ujson.JSONDecodeError:
             if re.match(nullregex, clandata):
                 criticals.append(f"`{clan}clan.json` is nullified")
+                info['Status'] = "Recoverable"
             else:
                 criticals.append(f"`{clan}clan.json` is not valid json")
+                info['Status'] = "Fixable"
         searchdir = f"{searchdir}/{clan}"
-
 
     try:
         with open(f"{searchdir}/clan_cats.json", "r") as f:
@@ -126,13 +129,14 @@ async def checksave(ctx: lightbulb.Context) -> None:
         cats = {}
         for cat in catjson:
             cats[cat['ID']] = cat
-            cats[cat['ID']]['name'] = f"{cat['name_prefix']}{cat['name_suffix']}"
+            cats[cat['ID']
+                 ]['name'] = f"{cat['name_prefix']}{cat['name_suffix']}"
 
-        for id, cat in cats.items(): # pylint: disable=redefined-builtin
-
+        for id, cat in cats.items():  # pylint: disable=redefined-builtin
 
             if clanjson and id not in clanjson['clan_cats']:
-                warnings.append(f"Cat `{cat['name']} ({id})` is not in clan_cats")
+                warnings.append(
+                    f"Cat `{cat['name']} ({id})` is not in clan_cats")
 
             # check for bad relationships
             if isinstance(cat['mate'], list):
@@ -155,7 +159,7 @@ async def checksave(ctx: lightbulb.Context) -> None:
                 if cat['mate'] and cat['mate'] in [cat['parent1'], cat['parent2']]:
                     errors.append(
                         f"Cat `{cat['name']}({id})` has a mate that is also a parent: `{cats[cat['mate']]['name']} ({cat['mate']})`")
-            
+
             if cat['parent1'] and cat['parent1'] not in cats:
                 criticals.append(
                     f"Cat `{cat['name']}({id})` has a parent1 that doesn't exist: `{cat['parent1']}`")
@@ -169,9 +173,11 @@ async def checksave(ctx: lightbulb.Context) -> None:
     except ujson.JSONDecodeError:
         if re.match(nullregex, catdata):
             criticals.append(f"`{clan}/clan_cats.json` is nullified")
+            info['Status'] = "Unrecoverable"
         else:
             criticals.append(f"`{clan}/clan_cats.json` is not valid json")
-        
+            info['Status'] = "Fixable"
+
     if attemptedToFix:
         allcats = []
         for cat in cats.values():
@@ -207,9 +213,9 @@ async def checksave(ctx: lightbulb.Context) -> None:
 
     recurse(f"{searchdir}")
 
-    if ctx.event.message.content == "Attempted to fix saves":
+    if secondrun:
         embed = hikari.Embed(
-            title=f"Report for fixed save",
+            title="Report for fixed save",
             color=0x8aadff
         )
     else:
@@ -218,14 +224,22 @@ async def checksave(ctx: lightbulb.Context) -> None:
             color=0x8aadff
         )
 
+    if secondrun and len(warnings) + len(errors) + len(criticals) == 0:
+        info['Final Status'] = "Fixed"
+
     for infostr, data in info.items():
+        if infostr == "Status":
+            if secondrun:
+                infostr = "Final Status"
+            data = f"__{data}__"
         embed.add_field(name=infostr, value=data, inline=False)
 
     if len(warnings) > 0:
         text = "\n".join(warnings)
         while len(text) > 1024:
             lastline = text[:1024].rfind("\n")
-            embed.add_field(name="Warnings", value=text[:lastline], inline=False)
+            embed.add_field(name="Warnings",
+                            value=text[:lastline], inline=False)
             text = text[lastline+1:]
         embed.add_field(name="Warnings", value=text, inline=False)
 
@@ -243,10 +257,11 @@ async def checksave(ctx: lightbulb.Context) -> None:
         text = "\n".join(criticals)
         while len(text) > 1024:
             lastline = text[:1024].rfind("\n")
-            embed.add_field(name="Criticals", value=text[:lastline], inline=False)
+            embed.add_field(name="Criticals",
+                            value=text[:lastline], inline=False)
             text = text[lastline+1:]
         embed.add_field(name="Criticals", value=text, inline=False)
-    
+
     # Max embed length is 6000
     # If it's over 6000, split it into multiple embeds
     # Split so it fits as many fields as possible, but if a field is too long, put it in the next embed
@@ -256,20 +271,18 @@ async def checksave(ctx: lightbulb.Context) -> None:
         embeds.append(hikari.Embed(title=embed.title, color=embed.color))
         for field in embed.fields:
             if embeds[-1].total_length() + len(field.value) > 6000:
-                embeds.append(hikari.Embed(title=f"{embed.title} continued", color=embed.color))
-            embeds[-1].add_field(name=field.name, value=field.value, inline=False)
+                embeds.append(hikari.Embed(
+                    title=f"{embed.title} continued", color=embed.color))
+            embeds[-1].add_field(name=field.name,
+                                 value=field.value, inline=False)
     else:
         embeds.append(embed)
 
     lastmsg = None
     for embed in embeds:
         lastmsg = await ctx.respond(embed=embed)
-    
 
     os.remove(f"{filedir}/{filename}")
-
-    if ctx.event.message.content == "Attempted to fix saves":
-        attemptedToFix = False # please dont recurse
 
     if attemptedToFix:
         with zipfile.ZipFile(f"{filedir}/{filename}", "w") as zip_ref:
@@ -277,15 +290,16 @@ async def checksave(ctx: lightbulb.Context) -> None:
                 for file in files:
                     if file == filename:
                         continue
-                    zip_ref.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), filedir))
+                    zip_ref.write(os.path.join(root, file), os.path.relpath(
+                        os.path.join(root, file), filedir))
         fixmsg = await ctx.respond(content="Attempted to fix saves", attachment=f"{filedir}/{filename}", reply=await lastmsg.message())
         shutil.rmtree(filedir)
 
-
         msg = await fixmsg.message()
         msg.referenced_message = msg
-        event = hikari.GuildMessageCreateEvent(message=msg, shard=ctx.event.shard) # pylint: disable=abstract-class-instantiated
-        ctx._event = event # pylint: disable=protected-access
+        event = hikari.GuildMessageCreateEvent( # pylint: disable=abstract-class-instantiated
+            message=msg, shard=ctx.event.shard)
+        ctx._event = event  # pylint: disable=protected-access
         await ctx.command.callback(ctx)
     else:
         shutil.rmtree(filedir)
