@@ -207,10 +207,16 @@ async def checksave(ctx: lightbulb.Context) -> None:
 
     recurse(f"{searchdir}")
 
-    embed = hikari.Embed(
-        title=f"Report for {clan}clan",
-        color=0x8aadff
-    )
+    if ctx.event.message.content == "Attempted to fix saves":
+        embed = hikari.Embed(
+            title=f"Report for fixed save",
+            color=0x8aadff
+        )
+    else:
+        embed = hikari.Embed(
+            title=f"Report for {clan}clan",
+            color=0x8aadff
+        )
 
     for infostr, data in info.items():
         embed.add_field(name=infostr, value=data, inline=False)
@@ -262,6 +268,9 @@ async def checksave(ctx: lightbulb.Context) -> None:
 
     os.remove(f"{filedir}/{filename}")
 
+    if ctx.event.message.content == "Attempted to fix saves":
+        attemptedToFix = False # please dont recurse
+
     if attemptedToFix:
         with zipfile.ZipFile(f"{filedir}/{filename}", "w") as zip_ref:
             for root, _, files in os.walk(filedir):
@@ -269,9 +278,17 @@ async def checksave(ctx: lightbulb.Context) -> None:
                     if file == filename:
                         continue
                     zip_ref.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), filedir))
-        await ctx.respond(content="Attempted to fix saves", attachment=f"{filedir}/{filename}", reply=lastmsg)
+        fixmsg = await ctx.respond(content="Attempted to fix saves", attachment=f"{filedir}/{filename}", reply=await lastmsg.message())
+        shutil.rmtree(filedir)
 
-    shutil.rmtree(filedir)
+
+        msg = await fixmsg.message()
+        msg.referenced_message = msg
+        event = hikari.GuildMessageCreateEvent(message=msg, shard=ctx.event.shard) # pylint: disable=abstract-class-instantiated
+        ctx._event = event # pylint: disable=protected-access
+        await ctx.command.callback(ctx)
+    else:
+        shutil.rmtree(filedir)
 
 
 def load(bot):
