@@ -37,7 +37,7 @@ async def compileScript(ctx: lightbulb.Context) -> None:
     # Run pyinstaller --onefile script.py
     try:
         subprocess.run(
-            ["/bin/bash", "-c", f'sudo docker run -it --rm -v "{os.path.abspath(filedir)}:/src/" cdrx/pyinstaller-windows "pyinstaller --onefile script.py"'], cwd=filedir, check=True)
+            ["/bin/bash", "-c", f'sudo docker run --rm -v "{os.path.abspath(filedir)}:/src/" cdrx/pyinstaller-windows "pyinstaller --onefile script.py"'], cwd=filedir, check=True)
     except subprocess.CalledProcessError:
         await message.edit(embed=hikari.Embed(description="**Failed to build file**", color=0xcc4968))
         return
