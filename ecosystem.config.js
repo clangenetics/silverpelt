@@ -27,7 +27,7 @@ module.exports = {
             user: "luna",
             host: "silverpelt.lvna.me",
             ref: "origin/prod",
-            repo: "git@github.com:clangen-devs/silverpelt.git",
+            repo: "git@github.com:clangenetics/silverpelt.git",
             path: "/home/luna/servers/silverpelt",
             "post-deploy": "npm install && pip install -r requirements.txt && pm2 startOrRestart ecosystem.config.js --env production"
         },
@@ -35,7 +35,7 @@ module.exports = {
             user: "luna",
             host: "silverpelt.lvna.me",
             ref: "origin/master",
-            repo: "git@github.com:clangen-devs/silverpelt.git",
+            repo: "git@github.com:clangenetics/silverpelt.git",
             path: "/home/luna/servers/silverpelt-dev",
             "post-deploy": "npm install && pip install -r requirements.txt && pm2 startOrRestart ecosystem.config.js --env development"
         },
@@ -43,7 +43,7 @@ module.exports = {
             user: "luna",
             host: "silverpelt.lvna.me",
             ref: "origin/prod",
-            repo: "git@github.com:clangen-devs/silverpelt.git",
+            repo: "git@github.com:clangenetics/silverpelt.git",
             path: "/home/luna/servers/fringekit",
             "post-deploy": "npm install && pip install -r requirements.txt && pm2 startOrRestart ecosystem.config.js --env fringe"
         },

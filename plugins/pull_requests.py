@@ -17,7 +17,7 @@ class API:
     def initialize(self) -> None:
         self.is_initialized = True
         self.github = Github(environ.get("GITHUB_TOKEN"))
-        self.repo = self.github.get_repo("Thlumyn/clangen")
+        self.repo = self.github.get_repo("clangenetics/clangenetics")
 
     def generate_template_embed(self) -> hikari.Embed:
         embed = hikari.Embed(
